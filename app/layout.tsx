@@ -11,7 +11,12 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Carbon Footprint Tracker',
-  description: 'Track your carbon footprint',
+  description: 'Track, analyze, and reduce your personal carbon footprint.',
+  icons: {
+    icon: '/logo.svg',
+    shortcut: '/logo.svg',
+    apple: '/logo.svg',
+  },
 };
 
 export default function RootLayout({
