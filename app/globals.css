@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+  }
+}
+
+@keyframes blob-pulse {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes flash-orange {
+  0%, 15% { background-color: #fc5603; }
+}
+
+.animate-blob-pulse {
+  animation: blob-pulse 10s infinite alternate ease-in-out;
+}
+
+.animate-flash-orange {
+  animation: flash-orange 2s ease-out;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scroll-bar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scroll-bar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Custom global scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark * {
+  scrollbar-color: #475569 transparent;
+}
+
+/* Capture Overrides */
+.is-capturing .no-capture {
+  display: none !important;
+}
+
+.is-capturing .hide-scroll-bar {
+  display: grid !important;
+  grid-template-cols: repeat(5, minmax(0, 1fr)) !important;
+  overflow: visible !important;
+  width: 100% !important;
+  gap: 1rem !important;
+}
+
+.is-capturing .hide-scroll-bar > div {
+  width: 100% !important;
+  max-width: none !important;
+  flex-shrink: 0 !important;
+}
+
+.is-capturing .max-h-\[300px\],
+.is-capturing .max-h-\[400px\] {
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
