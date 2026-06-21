@@ -34,8 +34,8 @@ Record your daily activities to track your carbon footprint across three input p
 | **Food & Diet** | Meal Type (Vegan / Vegetarian / Chicken-Fish / Beef-Lamb) + Servings | 0.5 – 3.5 kg CO₂e per serving | **Record Meal** |
 | **Energy Usage** | Action (Renewable / Saving Mode / Unplugged / Standard Grid) + Duration (hrs) | 0 – 0.6 kg CO₂e per hour | **Record Energy** |
 
-- **Impact Insight Panel** — After each record is added, a contextual tip is displayed explaining the environmental impact of your choice.
-- **Recent Footprint Records** — Scrollable list of your recorded activities with per-entry delete and dismiss buttons.
+- **Smart Eco-Insights & Recommendations** — A dynamic recommendation engine that triggers multiple value-based, contextual tips (2–5 tips per entry) depending on your selected activity mode and the magnitude of the input value. Includes specific carbon equivalence facts, resource usage statistics, health benefits, and actionable suggestions categorized under custom badges (`Eco-Win`, `Action Item`, `Insight`, and `Alert`).
+- **Recent Footprint Records** — Scrollable checklist of logged activities featuring per-row deletion, per-row dismissals, and new global **Dismiss All** and **Delete All** bulk buttons in the section header for quick control.
 - All data is persisted to `localStorage` and shared across all pages via the global **EcoProvider** context.
 
 ---

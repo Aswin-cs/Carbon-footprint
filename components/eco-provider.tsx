@@ -46,15 +46,15 @@ const defaultCategoryEmissions = [
 const EcoContext = createContext<EcoContextType>({
   weeklyEmissions: defaultWeeklyEmissions,
   categoryEmissions: defaultCategoryEmissions,
-  addEmission: () => {},
+  addEmission: () => { },
   logs: [],
-  addLog: () => {},
-  deleteLog: () => {},
-  deleteLogs: () => {},
+  addLog: () => { },
+  deleteLog: () => { },
+  deleteLogs: () => { },
   dailyLimit: 30,
-  setDailyLimit: () => {},
+  setDailyLimit: () => { },
   redeemedRewards: [],
-  redeemReward: () => {},
+  redeemReward: () => { },
   currentStreak: 0,
   earnedBadgesMap: {},
 });
@@ -100,7 +100,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
 
       const savedRewards = localStorage.getItem('eco_rewards');
       if (savedRewards) setRedeemedRewards(JSON.parse(savedRewards));
-      
+
       const savedBadgesMap = localStorage.getItem('eco_badges_map');
       if (savedBadgesMap) setEarnedBadgesMap(JSON.parse(savedBadgesMap));
     } catch (e) {
@@ -120,7 +120,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
     setDailyLimitState(val);
     localStorage.setItem('dailyLimit', val.toString());
   };
-  
+
   const [recentBadge, setRecentBadge] = useState<string | null>(null);
   const prevEarnedRef = React.useRef<string[]>([]);
 
@@ -130,7 +130,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   const initialMountRef = React.useRef(true);
   const [notifiedLimit, setNotifiedLimit] = useState(false);
   const [notifiedHigh, setNotifiedHigh] = useState(false);
-  const [activeAlert, setActiveAlert] = useState<{type: 'limit' | 'high', title: string, desc: string} | null>(null);
+  const [activeAlert, setActiveAlert] = useState<{ type: 'limit' | 'high', title: string, desc: string } | null>(null);
 
   const triggerFlash = () => {
     const el = document.getElementById('page-wrapper') || document.body;
@@ -167,31 +167,31 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
 
   const currentStreak = React.useMemo(() => {
     if (logs.length === 0) return 0;
-    
+
     const dates = logs.map(l => new Date(l.date).toLocaleDateString('en-US'));
     const uniqueDates = Array.from(new Set(dates)).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-    
+
     let streak = 0;
     const today = new Date();
-    today.setHours(0,0,0,0);
-    
+    today.setHours(0, 0, 0, 0);
+
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    
+
     if (uniqueDates.length > 0) {
       const mostRecentLogDate = new Date(uniqueDates[0]);
-      mostRecentLogDate.setHours(0,0,0,0);
-      
+      mostRecentLogDate.setHours(0, 0, 0, 0);
+
       if (mostRecentLogDate.getTime() === today.getTime() || mostRecentLogDate.getTime() === yesterday.getTime()) {
         let currentDate = mostRecentLogDate;
         streak = 1;
         for (let i = 1; i < uniqueDates.length; i++) {
           const d = new Date(uniqueDates[i]);
-          d.setHours(0,0,0,0);
-          
+          d.setHours(0, 0, 0, 0);
+
           const expectedNextDate = new Date(currentDate);
           expectedNextDate.setDate(expectedNextDate.getDate() - 1);
-          
+
           if (d.getTime() === expectedNextDate.getTime()) {
             streak++;
             currentDate = d;
@@ -216,10 +216,10 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     const initialRun = prevEarnedRef.current.length === 0 && earnedBadges.length > 0;
     const newlyEarned = earnedBadges.filter(id => !prevEarnedRef.current.includes(id));
-    
+
     let mapUpdated = false;
     const newMap = { ...earnedBadgesMap };
-    
+
     // Fill in timestamps for newly earned or un-recorded badges
     earnedBadges.forEach(badgeId => {
       if (!newMap[badgeId]) {
@@ -233,14 +233,14 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
     if (!initialRun && newlyEarned.length > 0) {
       setRecentBadge(newlyEarned[0]);
       triggerFlash();
-      
+
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
         colors: ['#10b981', '#34d399', '#059669', '#fbbf24', '#f59e0b']
       });
-      
+
       const timer = setTimeout(() => setRecentBadge(null), 5000);
       prevEarnedRef.current = earnedBadges;
       if (mapUpdated) setEarnedBadgesMap(newMap);
@@ -281,23 +281,23 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
     };
     setLogs(prev => [newLog, ...prev].slice(0, 50));
   };
-  
+
   const deleteLog = (id: string) => {
     const logToDelete = logs.find(l => l.id === id);
     if (!logToDelete) return;
-    
+
     if (undoTimeoutRef.current) {
-        clearTimeout(undoTimeoutRef.current);
+      clearTimeout(undoTimeoutRef.current);
     }
     setDeletedLogsState([logToDelete]);
     undoTimeoutRef.current = setTimeout(() => {
-        setDeletedLogsState(null);
+      setDeletedLogsState(null);
     }, 5000);
 
     setLogs(prev => prev.filter(log => log.id !== id));
-    
+
     const logDate = new Date(logToDelete.date).toLocaleDateString('en-US', { weekday: 'short' });
-    
+
     setWeeklyEmissions(prev => {
       const newData = [...prev];
       const dayIndex = newData.findIndex(d => d.name === logDate);
@@ -322,7 +322,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
     if (!deletedLogsState || deletedLogsState.length === 0) return;
 
     const logsToRestore = deletedLogsState;
-    
+
     setLogs(prev => {
       const newLogs = [...logsToRestore, ...prev];
       newLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -366,17 +366,17 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   const deleteLogs = (ids: string[]) => {
     const logsToDelete = logs.filter(l => ids.includes(l.id));
     if (logsToDelete.length === 0) return;
-    
+
     if (undoTimeoutRef.current) {
-        clearTimeout(undoTimeoutRef.current);
+      clearTimeout(undoTimeoutRef.current);
     }
     setDeletedLogsState(logsToDelete);
     undoTimeoutRef.current = setTimeout(() => {
-        setDeletedLogsState(null);
+      setDeletedLogsState(null);
     }, 5000);
 
     setLogs(prev => prev.filter(log => !ids.includes(log.id)));
-    
+
     setWeeklyEmissions(prev => {
       const newData = [...prev];
       logsToDelete.forEach(logToDelete => {
@@ -414,7 +414,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
       {children}
       <AnimatePresence>
         {recentBadge && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -422,7 +422,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
             className="fixed bottom-6 right-6 bg-white border border-emerald-200 shadow-xl rounded-lg p-4 flex items-center gap-4 z-50 max-w-sm"
           >
             <div className="bg-emerald-100 p-2 rounded-full text-emerald-600 shrink-0">
-               <span className="text-xl">🏆</span>
+              <span className="text-xl">🏆</span>
             </div>
             <div>
               <p className="text-xs font-bold text-emerald-600 uppercase tracking-wide mb-0.5">Badge Unlocked!</p>
@@ -437,35 +437,44 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
       </AnimatePresence>
       <AnimatePresence>
         {activeAlert && (
-          <motion.div 
-            initial={{ opacity: 0, y: -30, x: "-50%", scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, x: "-50%", scale: 1 }}
-            exit={{ opacity: 0, y: -20, x: "-50%", scale: 0.95 }}
-            transition={{ type: 'spring', damping: 20, stiffness: 300, mass: 0.8 }}
-            className={`fixed top-6 left-1/2 bg-white border shadow-xl rounded-lg p-4 flex items-center gap-4 z-50 min-w-[320px] max-w-sm ${
-            activeAlert.type === 'high' ? 'border-rose-200' : 'border-amber-200'
-          }`}>
-            <div className={`p-2 rounded-full shrink-0 ${
-              activeAlert.type === 'high' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
-            }`}>
-               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-alert-triangle w-6 h-6"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-            </div>
-            <div>
-              <p className={`text-xs font-bold uppercase tracking-wide mb-0.5 ${
-                 activeAlert.type === 'high' ? 'text-rose-600' : 'text-amber-600'
-              }`}>Alert</p>
-              <h4 className="text-sm font-bold text-slate-800">{activeAlert.title}</h4>
-              <p className="text-xs text-slate-500 mt-0.5">{activeAlert.desc}</p>
-            </div>
-            <button onClick={() => setActiveAlert(null)} className="absolute top-2 right-2 text-slate-400 hover:text-slate-600">
-              &times;
-            </button>
-          </motion.div>
+          <div className="fixed top-20 left-0 right-0 z-[150] flex justify-center px-4 pointer-events-none">
+            <motion.div 
+              initial={{ opacity: 0, y: -30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 20, stiffness: 300, mass: 0.8 }}
+              className={`pointer-events-auto bg-gradient-to-br border shadow-xl rounded-2xl p-4.5 flex items-center gap-4 max-w-sm w-full relative ${
+                activeAlert.type === 'high' 
+                  ? 'from-rose-50 to-red-50/50 border-rose-200 dark:from-rose-950/20 dark:to-red-950/10 dark:border-rose-900/30' 
+                  : 'from-amber-50 to-orange-50/50 border-amber-200 dark:from-amber-950/20 dark:to-orange-950/10 dark:border-amber-900/30'
+              }`}
+            >
+              <div className={`p-2 rounded-xl shrink-0 shadow-inner ${
+                activeAlert.type === 'high' ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-600'
+              }`}>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-alert-triangle w-5 h-5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+              </div>
+              <div className="flex-1 pr-4">
+                <p className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
+                   activeAlert.type === 'high' ? 'text-rose-600' : 'text-amber-600'
+                }`}>Alert</p>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{activeAlert.title}</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{activeAlert.desc}</p>
+              </div>
+              <button 
+                onClick={() => setActiveAlert(null)} 
+                className="absolute top-3 right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-350 p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-md transition-all duration-200"
+                title="Close alert"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x w-3.5 h-3.5"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </button>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
       <AnimatePresence>
         {deletedLogsState && deletedLogsState.length > 0 && (
-          <motion.div 
+          <motion.div
             key="undo-toast"
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -477,14 +486,14 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-white font-medium truncate">{deletedLogsState.length > 1 ? `${deletedLogsState.length} footprints deleted` : 'Footprint deleted'}</p>
                 <p className="text-xs text-slate-400 mt-0.5 truncate">
-                  {deletedLogsState.length > 1 
-                    ? `${deletedLogsState.reduce((acc, log) => acc + log.emission, 0).toFixed(1)} kg CO₂e combined` 
+                  {deletedLogsState.length > 1
+                    ? `${deletedLogsState.reduce((acc, log) => acc + log.emission, 0).toFixed(1)} kg CO₂e combined`
                     : `${deletedLogsState[0].category} • ${deletedLogsState[0].emission} kg`
                   }
                 </p>
               </div>
-              <button 
-                onClick={undoDeleteLog} 
+              <button
+                onClick={undoDeleteLog}
                 className="text-xs font-bold text-emerald-400 hover:text-white uppercase tracking-wide bg-emerald-400/10 hover:bg-emerald-500 transition-all px-4 py-2 rounded-lg shrink-0"
               >
                 Undo
