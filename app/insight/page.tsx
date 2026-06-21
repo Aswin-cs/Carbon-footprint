@@ -200,7 +200,7 @@ export default function InsightPage() {
     };
   }, [displayLogs]);
 
-  const [biosphereView, setBiosphereView] = useState<'today' | 'weekly'>('weekly');
+  const [biosphereView, setBiosphereView] = useState<'today' | 'weekly'>('today');
 
   // Compute today's emissions
   const todayEmissions = useMemo(() => {

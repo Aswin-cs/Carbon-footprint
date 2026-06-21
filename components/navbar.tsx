@@ -31,17 +31,49 @@ export default function NavBar() {
             <span className="text-lg font-bold text-slate-800">Carbon Footprint Tracker</span>
           </Link>
           <div className="hidden md:flex gap-4 items-center">
-            <Link href="/tracker" className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-lg text-sm font-bold transition-colors">
+            <Link
+              href="/"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                pathname === '/'
+                  ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-700/10'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Home className="w-4 h-4" />
+              Home
+            </Link>
+            <Link
+              href="/tracker"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                pathname.startsWith('/tracker')
+                  ? 'bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-700/10'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
               <Activity className="w-4 h-4" />
               Tracker
             </Link>
-            <Link href="/acheivement" className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-bold transition-colors">
-              <Coins className="w-4 h-4" />
-              Achievements
-            </Link>
-            <Link href="/insight" className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg text-sm font-bold transition-colors">
+            <Link
+              href="/insight"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                pathname.startsWith('/insight')
+                  ? 'bg-amber-50 text-amber-700 shadow-sm ring-1 ring-amber-700/10'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
               <Lightbulb className="w-4 h-4" />
               Insights
+            </Link>
+            <Link
+              href="/acheivement"
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+                pathname.startsWith('/acheivement')
+                  ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-700/10'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Coins className="w-4 h-4" />
+              Achievements
             </Link>
           </div>
         </div>
@@ -71,29 +103,57 @@ export default function NavBar() {
                   </button>
                 </div>
                 <div className="flex flex-col gap-3 p-6 bg-slate-50/50">
-                  <Link href="/" className="flex items-center gap-4 text-lg font-bold text-slate-800 hover:text-emerald-600 transition-all w-full p-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-100 shadow-sm active:scale-95">
-                    <div className="p-2 bg-blue-50 rounded-lg">
-                      <Home className="w-5 h-5 text-blue-600" />
+                  <Link
+                    href="/"
+                    className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
+                      pathname === '/'
+                        ? 'text-blue-700 bg-blue-50/50 border-blue-200'
+                        : 'text-slate-800 hover:text-blue-600 bg-white hover:bg-slate-50 border-slate-100'
+                    }`}
+                  >
+                    <div className={`p-2 rounded-lg transition-colors ${pathname === '/' ? 'bg-blue-100' : 'bg-blue-50'}`}>
+                      <Home className={`w-5 h-5 transition-colors ${pathname === '/' ? 'text-blue-700' : 'text-blue-600'}`} />
                     </div>
                     Home Dashboard
                   </Link>
-                  <Link href="/tracker" className="flex items-center gap-4 text-lg font-bold text-slate-800 hover:text-emerald-600 transition-all w-full p-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-100 shadow-sm active:scale-95">
-                    <div className="p-2 bg-emerald-50 rounded-lg">
-                      <Activity className="w-5 h-5 text-emerald-600" />
+                  <Link
+                    href="/tracker"
+                    className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
+                      pathname.startsWith('/tracker')
+                        ? 'text-emerald-700 bg-emerald-50/50 border-emerald-200'
+                        : 'text-slate-800 hover:text-emerald-600 bg-white hover:bg-slate-50 border-slate-100'
+                    }`}
+                  >
+                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/tracker') ? 'bg-emerald-100' : 'bg-emerald-50'}`}>
+                      <Activity className={`w-5 h-5 transition-colors ${pathname.startsWith('/tracker') ? 'text-emerald-700' : 'text-emerald-600'}`} />
                     </div>
                     Tracker Dashboard
                   </Link>
-                  <Link href="/economy" className="flex items-center gap-4 text-lg font-bold text-slate-800 hover:text-emerald-600 transition-all w-full p-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-100 shadow-sm active:scale-95">
-                    <div className="p-2 bg-indigo-50 rounded-lg">
-                      <Coins className="w-5 h-5 text-indigo-600" />
-                    </div>
-                    Achievements
-                  </Link>
-                  <Link href="/insight" className="flex items-center gap-4 text-lg font-bold text-slate-800 hover:text-emerald-600 transition-all w-full p-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-100 shadow-sm active:scale-95">
-                    <div className="p-2 bg-amber-50 rounded-lg">
-                      <Lightbulb className="w-5 h-5 text-amber-600" />
+                  <Link
+                    href="/insight"
+                    className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
+                      pathname.startsWith('/insight')
+                        ? 'text-amber-700 bg-amber-50/50 border-amber-200'
+                        : 'text-slate-800 hover:text-amber-600 bg-white hover:bg-slate-50 border-slate-100'
+                    }`}
+                  >
+                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/insight') ? 'bg-amber-100' : 'bg-amber-50'}`}>
+                      <Lightbulb className={`w-5 h-5 transition-colors ${pathname.startsWith('/insight') ? 'text-amber-700' : 'text-amber-600'}`} />
                     </div>
                     Insights & Tips
+                  </Link>
+                  <Link
+                    href="/acheivement"
+                    className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
+                      pathname.startsWith('/acheivement')
+                        ? 'text-indigo-700 bg-indigo-50/50 border-indigo-200'
+                        : 'text-slate-800 hover:text-indigo-600 bg-white hover:bg-slate-50 border-slate-100'
+                    }`}
+                  >
+                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/acheivement') ? 'bg-indigo-100' : 'bg-indigo-50'}`}>
+                      <Coins className={`w-5 h-5 transition-colors ${pathname.startsWith('/acheivement') ? 'text-indigo-700' : 'text-indigo-600'}`} />
+                    </div>
+                    Achievements
                   </Link>
                 </div>
               </div>

@@ -472,7 +472,7 @@ export default function Dashboard() {
 
   return (
     <div ref={dashboardRef} className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col tablet:flex-row md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="w-full max-w-sm">
           <h1 className="text-lg font-bold text-slate-800 dark:text-slate-400 transition-colors duration-500">Your Impact Dashboard</h1>
           <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 transition-colors duration-500 mb-0 md:mb-3">Here's how your carbon footprint looks today.</p>
@@ -496,7 +496,7 @@ export default function Dashboard() {
               className="flex items-center justify-center gap-2 p-2 md:px-3 md:py-1.5 bg-white border border-slate-200 text-slate-600 rounded-md text-xs font-medium hover:bg-slate-50 transition-colors shrink-0 no-capture"
               title="Limit Settings"
             >
-              <Settings2 className="w-4 h-4" /> <span className="hidden md:inline">Limit Settings</span>
+              <Settings2 className="w-4 h-4" /> <span className="hidden lg:inline">Limit Settings</span>
             </button>
             <button 
               onClick={handleShareDashboard}
@@ -511,7 +511,7 @@ export default function Dashboard() {
                 </>
               ) : (
                 <>
-                  <Share2 className="w-4 h-4" /> <span className="hidden md:inline">Share Dashboard</span>
+                  <Share2 className="w-4 h-4" /> <span className="hidden lg:inline">Share Dashboard</span>
                 </>
               )}
             </button>
