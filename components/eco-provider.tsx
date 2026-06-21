@@ -18,7 +18,7 @@ const LogsSchema = z.array(LogEntrySchema);
 const WeeklyEmissionSchema = z.array(z.object({ name: z.string(), emissions: z.number().nonnegative() }));
 const CategoryEmissionSchema = z.array(z.object({ name: z.string(), value: z.number().nonnegative() }));
 const RewardsSchema = z.array(z.string());
-const BadgesMapSchema = z.record(z.string());
+const BadgesMapSchema = z.record(z.string(), z.string());
 
 // Helper to safely sanitize text on both server and client
 const sanitize = (text: string) => {

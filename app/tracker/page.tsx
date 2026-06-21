@@ -84,7 +84,7 @@ export default function Tracker() {
     const mode = macroMode ?? transportMode;
     const result = ActivityInputSchema.safeParse({ category: 'Transport', value: rawVal, label: mode });
     if (!result.success) {
-      console.error(result.error.errors[0].message);
+      console.error(result.error.issues[0].message);
       return;
     }
     const dist = result.data.value;
@@ -150,7 +150,7 @@ export default function Tracker() {
     const type = macroType ?? foodType;
     const result = ActivityInputSchema.safeParse({ category: 'Food', value: rawVal, label: type });
     if (!result.success) {
-      console.error(result.error.errors[0].message);
+      console.error(result.error.issues[0].message);
       return;
     }
     const servings = result.data.value;
@@ -206,7 +206,7 @@ export default function Tracker() {
     const action = macroAction ?? energyAction;
     const result = ActivityInputSchema.safeParse({ category: 'Energy', value: rawVal, label: action });
     if (!result.success) {
-      console.error(result.error.errors[0].message);
+      console.error(result.error.issues[0].message);
       return;
     }
     const hours = result.data.value;
@@ -415,7 +415,7 @@ export default function Tracker() {
             </div>
           </div>
           <button 
-            onClick={handleTransportLog}
+            onClick={() => handleTransportLog()}
             disabled={!transportDistance || parseFloat(transportDistance) <= 0}
             className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
@@ -457,7 +457,7 @@ export default function Tracker() {
             </div>
           </div>
           <button 
-            onClick={handleFoodLog}
+            onClick={() => handleFoodLog()}
             disabled={!foodServings || parseFloat(foodServings) <= 0}
             className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
@@ -499,7 +499,7 @@ export default function Tracker() {
             </div>
           </div>
           <button 
-            onClick={handleEnergyLog}
+            onClick={() => handleEnergyLog()}
             disabled={!energyDuration || parseFloat(energyDuration) <= 0}
             className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
