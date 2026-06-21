@@ -103,7 +103,7 @@ export default function Tracker() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="w-full max-w-sm">
           <h1 className="text-lg font-bold text-slate-800 dark:text-slate-400 transition-colors duration-500">Carbon Tracker</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 transition-colors duration-500 mb-3">Log your daily activities to track emissions.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-500 mt-1 transition-colors duration-500 mb-3">Record your daily activities to track your carbon footprint.</p>
         </div>
       </div>
       
@@ -158,7 +158,7 @@ export default function Tracker() {
             disabled={!transportDistance || parseFloat(transportDistance) <= 0}
             className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
-            <Plus className="w-4 h-4" /> Log Transport
+            <Plus className="w-4 h-4" /> Record Transport
           </button>
         </div>
 
@@ -200,7 +200,7 @@ export default function Tracker() {
             disabled={!foodServings || parseFloat(foodServings) <= 0}
             className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
-            <Plus className="w-4 h-4" /> Log Meal
+            <Plus className="w-4 h-4" /> Record Meal
           </button>
         </div>
 
@@ -242,7 +242,7 @@ export default function Tracker() {
             disabled={!energyDuration || parseFloat(energyDuration) <= 0}
             className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
-            <Plus className="w-4 h-4" /> Log Energy
+            <Plus className="w-4 h-4" /> Record Energy
           </button>
         </div>
       </div>
@@ -252,7 +252,7 @@ export default function Tracker() {
         if (visibleLogs.length === 0) return null;
         return (
           <div className="bg-white p-6 justify-center rounded-lg shadow-sm border border-emerald-200">
-            <h3 className="font-bold text-slate-700 text-sm mb-4">Recent Activity Logs</h3>
+            <h3 className="font-bold text-slate-700 text-sm mb-4">Recent Footprint Records</h3>
             <div className={`space-y-2 ${visibleLogs.length > 3 ? "max-h-[220px] overflow-y-auto pr-2" : ""}`}>
               {visibleLogs.map((log) => (
                 <div key={log.id} className="flex justify-between items-center text-sm p-3 bg-emerald-50 text-emerald-800 rounded border border-emerald-100 group">
@@ -264,7 +264,7 @@ export default function Tracker() {
                     <button
                       onClick={() => deleteLog(log.id)}
                       className="p-1.5 text-emerald-600 hover:text-red-600 hover:bg-white rounded transition-colors"
-                      title="Delete log permanently"
+                      title="Delete footprint permanently"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

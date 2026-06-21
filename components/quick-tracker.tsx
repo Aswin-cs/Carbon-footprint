@@ -84,7 +84,7 @@ export default function QuickTracker() {
     addLog({ 
       category, 
       emission, 
-      message: `Quick logged ${category}: ${subCategory} (${numericValue} ${unit})` 
+      message: `Quick recorded ${category} footprint: ${subCategory} (${numericValue} ${unit})` 
     });
     setIsOpen(false);
     setValue('');
@@ -97,7 +97,7 @@ export default function QuickTracker() {
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(true)}
-        title="Quick Log (Ctrl+K)"
+        title="Quick Footprint (Ctrl+K)"
         className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 z-[90] focus:outline-none focus:ring-4 focus:ring-emerald-300"
       >
         <Plus className="w-6 h-6" />
@@ -109,14 +109,14 @@ export default function QuickTracker() {
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setIsOpen(false)} />
           <div className="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
             <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
-              <label className="text-[14px] font-bold text-slate-800 tracking-tight">Quick Log Activity</label>
+              <label className="text-[14px] font-bold text-slate-800 tracking-tight">Quick Footprint Record</label>
               <button onClick={() => setIsOpen(false)} className="p-2 -mr-2 bg-slate-50 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
             
             <div className="p-6 space-y-5">
-              <div className="text-sm text-slate-500 mb-2">Quickly log an activity to track your impact.</div>
+              <div className="text-sm text-slate-500 mb-2">Quickly record an activity to track your carbon footprint.</div>
               
               <div className="space-y-4">
                 <div>
@@ -187,7 +187,7 @@ export default function QuickTracker() {
                 disabled={!value || parseFloat(value) <= 0}
                 className="w-full py-3.5 mt-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
               >
-                <Plus className="w-4 h-4" /> Log Impact
+                <Plus className="w-4 h-4" /> Record Footprint
               </button>
             </div>
           </div>

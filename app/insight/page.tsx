@@ -371,7 +371,7 @@ export default function InsightPage() {
             <span>
               Viewing simulation data.{" "}
               <Link href="/tracker" className="underline hover:text-amber-950 dark:hover:text-amber-100 font-bold transition-colors">
-                Log real activities
+                Record real activities
               </Link>{" "}
               to unlock accurate footprints!
             </span>
@@ -441,8 +441,8 @@ export default function InsightPage() {
                     <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                       {biosphereView === 'today'
                         ? (isEmissionHigh 
-                            ? `Your carbon footprint logged today (${todayEmissions} kg) exceeds the 50.0 kg limit. The biosphere is arid.`
-                            : `Your carbon footprint logged today (${todayEmissions} kg) is within the 50.0 kg limit. Thriving!`)
+                            ? `Your carbon footprint recorded today (${todayEmissions} kg) exceeds the 50.0 kg limit. The biosphere is arid.`
+                            : `Your carbon footprint recorded today (${todayEmissions} kg) is within the 50.0 kg limit. Thriving!`)
                         : (isEmissionHigh
                             ? `Your weekly daily average (${stats.dailyAvg} kg/day) exceeds the 40.0 kg limit. The biosphere is arid.`
                             : `Your weekly daily average (${stats.dailyAvg} kg/day) is within the 40.0 kg limit. Thriving!`)}
@@ -528,7 +528,7 @@ export default function InsightPage() {
 
                   {/* Tree — center */}
                   <div
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 w-32 md:w-36 flex flex-col items-center pointer-events-auto select-none"
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 w-44 md:w-52 flex flex-col items-center pointer-events-auto select-none"
                     onMouseEnter={() => setHoveredObject('tree')}
                     onMouseLeave={() => setHoveredObject(null)}
                   >
@@ -554,7 +554,7 @@ export default function InsightPage() {
                     <img
                       src={isEmissionHigh ? "/dry_tree.svg" : "/tree.svg"}
                       alt="Tree"
-                      className="w-full max-h-44 object-contain object-bottom cursor-pointer"
+                      className="w-full max-h-60 object-contain object-bottom cursor-pointer"
                     />
                   </div>
 
@@ -659,9 +659,9 @@ export default function InsightPage() {
                 </h3>
                 <p className="text-xs leading-relaxed opacity-90 text-slate-700 dark:text-slate-300">
                   {stats.highestCat === 'Transport' && "Your transport actions represent a significant portion of your output. Swap 2 car journeys for cycling or transit this week to save an estimated 14.5 kg CO2e!"}
-                  {stats.highestCat === 'Food' && "Food footprint stands high in your logs. Swapping one beef burger serving for vegetarian options cuts emissions by 75% for that meal. Try a 'Green Monday' recipe!"}
-                  {stats.highestCat === 'Energy' && "Energy consumption is your largest log category. Ensure all power strips are turned off at night. Vampire load can quietly add 10% to your utility bill."}
-                  {stats.highestCat === 'General' && "Start logging your daily commutes, dinners, and device usage on the Tracker page. Carbon Footprint Tracker will study your habits and compile customized reduction suggestions here!"}
+                  {stats.highestCat === 'Food' && "Food footprint stands high in your footprint records. Swapping one beef burger serving for vegetarian options cuts emissions by 75% for that meal. Try a 'Green Monday' recipe!"}
+                  {stats.highestCat === 'Energy' && "Energy consumption is your largest footprint category. Ensure all power strips are turned off at night. Vampire load can quietly add 10% to your utility bill."}
+                  {stats.highestCat === 'General' && "Start recording your daily commutes, dinners, and device usage on the Tracker page. Carbon Footprint Tracker will study your habits and compile customized reduction suggestions here!"}
                 </p>
               </div>
             </div>

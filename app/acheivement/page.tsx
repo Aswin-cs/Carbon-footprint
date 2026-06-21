@@ -30,11 +30,11 @@ export default function Economy() {
   ];
 
   const BADGES = [
-    { id: 'act_1', name: 'First Step', desc: 'Log your first eco-action', active: logs.length >= 1, progress: Math.min(logs.length, 1) / 1, text: `${Math.min(logs.length, 1)}/1 logs`, icon: <CheckCircle2 className={`w-6 h-6 ${logs.length >= 1 ? 'text-emerald-500' : 'text-slate-400'}`} /> },
+    { id: 'act_1', name: 'First Step', desc: 'Record your first carbon footprint', active: logs.length >= 1, progress: Math.min(logs.length, 1) / 1, text: `${Math.min(logs.length, 1)}/1 footprints`, icon: <CheckCircle2 className={`w-6 h-6 ${logs.length >= 1 ? 'text-emerald-500' : 'text-slate-400'}`} /> },
     { id: 'streak_1', name: 'Daily Starter', desc: 'Complete 1-day eco streak', active: currentStreak >= 1, progress: Math.min(currentStreak, 1) / 1, text: `${Math.min(currentStreak, 1)}/1 days`, icon: <Flame className={`w-6 h-6 ${currentStreak >= 1 ? 'text-orange-500' : 'text-slate-400'}`} /> },
     { id: 'streak_3', name: 'Habit Builder', desc: 'Complete 3-day eco streak', active: currentStreak >= 3, progress: Math.min(currentStreak, 3) / 3, text: `${Math.min(currentStreak, 3)}/3 days`, icon: <Flame className={`w-6 h-6 ${currentStreak >= 3 ? 'text-orange-500' : 'text-slate-400'}`} /> },
     { id: 'streak_7', name: 'Eco Champion', desc: 'Complete 7-day eco streak', active: currentStreak >= 7, progress: Math.min(currentStreak, 7) / 7, text: `${Math.min(currentStreak, 7)}/7 days`, icon: <Flame className={`w-6 h-6 ${currentStreak >= 7 ? 'text-orange-500' : 'text-slate-400'}`} /> },
-    { id: 'act_10', name: 'Consistency', desc: 'Log 10 eco-actions', active: logs.length >= 10, progress: Math.min(logs.length, 10) / 10, text: `${Math.min(logs.length, 10)}/10 logs`, icon: <ShieldCheck className={`w-6 h-6 ${logs.length >= 10 ? 'text-blue-500' : 'text-slate-400'}`} /> },
+    { id: 'act_10', name: 'Consistency', desc: 'Record 10 carbon footprints', active: logs.length >= 10, progress: Math.min(logs.length, 10) / 10, text: `${Math.min(logs.length, 10)}/10 footprints`, icon: <ShieldCheck className={`w-6 h-6 ${logs.length >= 10 ? 'text-blue-500' : 'text-slate-400'}`} /> },
     { id: 'tree_planter', name: 'Tree Planter', desc: 'Support a tree planting initiative', active: redeemedRewards.includes('tree_1'), progress: redeemedRewards.includes('tree_1') ? 1 : 0, text: `${redeemedRewards.includes('tree_1') ? 1 : 0}/1 reward`, icon: <TreePine className={`w-6 h-6 ${redeemedRewards.includes('tree_1') ? 'text-emerald-600' : 'text-slate-400'}`} /> },
   ];
 

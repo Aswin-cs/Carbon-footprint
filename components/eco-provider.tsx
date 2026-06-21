@@ -62,8 +62,8 @@ const EcoContext = createContext<EcoContextType>({
 export const useEco = () => useContext(EcoContext);
 
 const BADGE_DETAILS: Record<string, { name: string; desc: string }> = {
-  'act_1': { name: 'First Step', desc: 'Log your first eco-action' },
-  'act_10': { name: 'Consistency', desc: 'Log 10 eco-actions' },
+  'act_1': { name: 'First Step', desc: 'Record your first carbon footprint' },
+  'act_10': { name: 'Consistency', desc: 'Record 10 carbon footprints' },
   'streak_1': { name: 'Daily Starter', desc: 'Complete 1-day eco streak' },
   'streak_3': { name: 'Habit Builder', desc: 'Complete 3-day eco streak' },
   'streak_7': { name: 'Eco Champion', desc: 'Complete 7-day eco streak' },
@@ -475,7 +475,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
           >
             <div className="bg-slate-900 border border-slate-800 shadow-2xl rounded-xl py-3 px-5 flex items-center justify-between gap-4 pointer-events-auto w-full max-w-sm">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-white font-medium truncate">{deletedLogsState.length > 1 ? `${deletedLogsState.length} logs deleted` : 'Log deleted'}</p>
+                <p className="text-sm text-white font-medium truncate">{deletedLogsState.length > 1 ? `${deletedLogsState.length} footprints deleted` : 'Footprint deleted'}</p>
                 <p className="text-xs text-slate-400 mt-0.5 truncate">
                   {deletedLogsState.length > 1 
                     ? `${deletedLogsState.reduce((acc, log) => acc + log.emission, 0).toFixed(1)} kg CO₂e combined` 

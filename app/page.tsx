@@ -566,7 +566,7 @@ export default function Dashboard() {
               {isOverLimit ? 'Daily Limit Reached' : 'Approaching Daily Limit'}
             </h3>
             <p className="text-xs mt-1" style={{ opacity: 0.9 }}>
-              You've logged {todayEmissions.toFixed(1)} kg CO2e today, which is {isOverLimit ? 'at or beyond' : 'nearing'} your daily limit of {dailyLimit} kg CO2e.
+              You've recorded {todayEmissions.toFixed(1)} kg CO2e today, which is {isOverLimit ? 'at or beyond' : 'nearing'} your daily limit of {dailyLimit} kg CO2e.
             </p>
           </div>
           <button 
@@ -633,7 +633,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-sm flex flex-col justify-between w-[80vw] max-w-[280px] xl:w-full xl:max-w-none shrink-0 snap-start xl:snap-align-none transition-all duration-300 hover:shadow-md hover:-translate-y-1">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Logs Today</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Footprints Today</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-bold text-slate-800">{logsTodayCount}</span>
                   <span className="text-xs font-bold text-slate-500">actions</span>
@@ -654,7 +654,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-sm flex flex-col justify-between w-[80vw] max-w-[280px] xl:w-full xl:max-w-none shrink-0 snap-start xl:snap-align-none transition-all duration-300 hover:shadow-md hover:-translate-y-1">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Logs</p>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Footprints</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-bold text-slate-800">{totalLogsCount}</span>
                   <span className="text-xs font-bold text-slate-500">actions</span>
@@ -883,7 +883,7 @@ export default function Dashboard() {
       <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
-            {selectedDay ? `${selectedDay}'s Activity` : 'Activity Log'}
+            {selectedDay ? `${selectedDay}'s Footprints` : 'Footprint Log'}
           </h2>
           {(hasRealData ? logs.length > 0 : mockLogsList.length > 0) && (
             <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 no-capture">
@@ -918,7 +918,7 @@ export default function Dashboard() {
         </div>
         
         {(!hasRealData ? mockLogsList.length === 0 : logs.length === 0) ? (
-          <p className="text-sm text-slate-500 text-center py-8">No activities logged yet.</p>
+          <p className="text-sm text-slate-500 text-center py-8">No carbon footprints recorded yet.</p>
         ) : (
           <div className="flex flex-col gap-4">
             {/* Mobile / Narrow View (Card Layout) */}
@@ -987,7 +987,7 @@ export default function Dashboard() {
                     <button
                       onClick={() => deleteLog(log.id)}
                       className="absolute bottom-2 right-2 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors no-capture"
-                      title="Delete log"
+                      title="Delete footprint record"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1060,7 +1060,7 @@ export default function Dashboard() {
                           <button
                             onClick={() => deleteLog(log.id)}
                             className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                            title="Delete log"
+                            title="Delete footprint record"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
