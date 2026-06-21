@@ -70,7 +70,7 @@ export default function Tracker() {
   const [transportDistance, setTransportDistance] = useState('');
 
   const [foodType, setFoodType] = useState('Vegan Meal');
-  const [foodServings, setFoodServings] = useState('0');
+  const [foodServings, setFoodServings] = useState('');
 
   const [energyAction, setEnergyAction] = useState('Renewable Source (Solar/Wind)');
   const [energyDuration, setEnergyDuration] = useState('');
@@ -183,7 +183,7 @@ export default function Tracker() {
     addEmission(emission, 'Food');
     addLog({ category: 'Food', emission, message: `Logged Food: ${foodType} (${servings} servings)` });
     setRecentTips(tips);
-    setFoodServings('1');
+    setFoodServings('');
   };
 
   const handleEnergyLog = () => {
@@ -404,7 +404,7 @@ export default function Tracker() {
                 type="number" 
                 value={foodServings}
                 onChange={(e) => setFoodServings(e.target.value)}
-                placeholder="1" 
+                placeholder="e.g. 0" 
                 className="w-full p-2 border border-slate-200 rounded text-sm text-slate-700 bg-slate-50 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" 
               />
             </div>
