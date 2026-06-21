@@ -54,7 +54,7 @@ Record your daily activities to track your carbon footprint across three input p
 
 ---
 
-### 🏆 Achievements & Badges (`/acheivement`)
+### 🏆 Achievements & Badges (`/achievement`)
 - **Community Eco-Initiatives** — Support 4 green initiatives (Plant a Tree, Clean Water, Solar Project, Wind Energy). Redeeming the Tree initiative unlocks the *Tree Planter* badge.
 - **Badge System** — Earn 6 achievement badges automatically based on your activity:
 
@@ -141,7 +141,7 @@ Carbon footprint/
 │   ├── page.tsx            # Dashboard page
 │   ├── tracker/page.tsx    # Carbon Tracker page
 │   ├── insight/page.tsx    # Environmental Insights page
-│   ├── acheivement/page.tsx# Achievements & Badges page
+│   ├── achievement/page.tsx# Achievements & Badges page
 │   ├── not-found.tsx       # Custom 404 page
 │   ├── layout.tsx          # Root layout with Navbar & EcoProvider
 │   └── globals.css         # Global styles & keyframe animations

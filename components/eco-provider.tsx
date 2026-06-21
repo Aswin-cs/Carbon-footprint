@@ -2,6 +2,29 @@
 import React, { createContext, useContext, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import DOMPurify from 'dompurify';
+import { z } from 'zod';
+
+// Zod Schemas for strict runtime validation
+const LimitSchema = z.number().positive("Limit must be positive");
+const LogEntrySchema = z.object({
+  id: z.string(),
+  date: z.string(),
+  category: z.string(),
+  emission: z.number().nonnegative(),
+  message: z.string(),
+});
+const LogsSchema = z.array(LogEntrySchema);
+const WeeklyEmissionSchema = z.array(z.object({ name: z.string(), emissions: z.number().nonnegative() }));
+const CategoryEmissionSchema = z.array(z.object({ name: z.string(), value: z.number().nonnegative() }));
+const RewardsSchema = z.array(z.string());
+const BadgesMapSchema = z.record(z.string());
+
+// Helper to safely sanitize text on both server and client
+const sanitize = (text: string) => {
+  if (typeof window === 'undefined') return text;
+  return DOMPurify.sanitize(text);
+};
 
 export type LogEntry = {
   id: string;
@@ -87,22 +110,50 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     try {
       const savedLimit = localStorage.getItem('dailyLimit');
-      if (savedLimit) setDailyLimitState(Number(savedLimit));
+      if (savedLimit) {
+        const result = LimitSchema.safeParse(Number(savedLimit));
+        if (result.success) setDailyLimitState(result.data);
+      }
 
       const savedLogs = localStorage.getItem('eco_logs');
-      if (savedLogs) setLogs(JSON.parse(savedLogs));
+      if (savedLogs) {
+        try {
+          const result = LogsSchema.safeParse(JSON.parse(savedLogs));
+          if (result.success) setLogs(result.data);
+        } catch(e) {}
+      }
 
       const savedWeekly = localStorage.getItem('eco_weekly');
-      if (savedWeekly) setWeeklyEmissions(JSON.parse(savedWeekly));
+      if (savedWeekly) {
+        try {
+          const result = WeeklyEmissionSchema.safeParse(JSON.parse(savedWeekly));
+          if (result.success) setWeeklyEmissions(result.data);
+        } catch(e) {}
+      }
 
       const savedCategory = localStorage.getItem('eco_category');
-      if (savedCategory) setCategoryEmissions(JSON.parse(savedCategory));
+      if (savedCategory) {
+        try {
+          const result = CategoryEmissionSchema.safeParse(JSON.parse(savedCategory));
+          if (result.success) setCategoryEmissions(result.data);
+        } catch(e) {}
+      }
 
       const savedRewards = localStorage.getItem('eco_rewards');
-      if (savedRewards) setRedeemedRewards(JSON.parse(savedRewards));
+      if (savedRewards) {
+        try {
+          const result = RewardsSchema.safeParse(JSON.parse(savedRewards));
+          if (result.success) setRedeemedRewards(result.data);
+        } catch(e) {}
+      }
 
       const savedBadgesMap = localStorage.getItem('eco_badges_map');
-      if (savedBadgesMap) setEarnedBadgesMap(JSON.parse(savedBadgesMap));
+      if (savedBadgesMap) {
+        try {
+          const result = BadgesMapSchema.safeParse(JSON.parse(savedBadgesMap));
+          if (result.success) setEarnedBadgesMap(result.data);
+        } catch(e) {}
+      }
     } catch (e) {
       console.error('Failed to load storage', e);
     } finally {
@@ -117,6 +168,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => { if (initialized) localStorage.setItem('eco_badges_map', JSON.stringify(earnedBadgesMap)); }, [earnedBadgesMap, initialized]);
 
   const setDailyLimit = (val: number) => {
+    if (val <= 0 || isNaN(val)) return; // Prevent setting negative or invalid limit
     setDailyLimitState(val);
     localStorage.setItem('dailyLimit', val.toString());
   };
@@ -251,6 +303,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   }, [earnedBadges.join(',')]);
 
   const addEmission = (val: number, category: string) => {
+    if (typeof val !== 'number' || val < 0 || isNaN(val)) return; // Prevent negative emission injection
     const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
     setWeeklyEmissions(prev => {
       const newData = [...prev];
@@ -276,6 +329,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   const addLog = (log: Omit<LogEntry, 'id' | 'date'>) => {
     const newLog: LogEntry = {
       ...log,
+      message: sanitize(log.message),
       id: Math.random().toString(36).substring(2, 9),
       date: new Date().toISOString(),
     };
@@ -419,17 +473,17 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="fixed bottom-6 right-6 bg-white border border-emerald-200 shadow-xl rounded-lg p-4 flex items-center gap-4 z-50 max-w-sm"
+            className="fixed bottom-6 right-6 bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 shadow-xl rounded-lg p-4 flex items-center gap-4 z-50 max-w-sm"
           >
-            <div className="bg-emerald-100 p-2 rounded-full text-emerald-600 shrink-0">
+            <div className="bg-emerald-100 dark:bg-emerald-950/40 p-2 rounded-full text-emerald-600 dark:text-emerald-400 shrink-0">
               <span className="text-xl">🏆</span>
             </div>
             <div>
-              <p className="text-xs font-bold text-emerald-600 uppercase tracking-wide mb-0.5">Badge Unlocked!</p>
-              <h4 className="text-sm font-bold text-slate-800">{BADGE_DETAILS[recentBadge].name}</h4>
-              <p className="text-xs text-slate-500 mt-0.5">{BADGE_DETAILS[recentBadge].desc}</p>
+              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mb-0.5">Badge Unlocked!</p>
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{BADGE_DETAILS[recentBadge].name}</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{BADGE_DETAILS[recentBadge].desc}</p>
             </div>
-            <button onClick={() => setRecentBadge(null)} className="absolute top-2 right-2 text-slate-400 hover:text-slate-600">
+            <button onClick={() => setRecentBadge(null)} className="absolute top-2 right-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350">
               &times;
             </button>
           </motion.div>

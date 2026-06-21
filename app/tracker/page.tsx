@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Activity, Car, Utensils, Zap, Plus, Lightbulb, Trash2, X, Leaf, TrendingDown, Droplets, TreePine, Recycle, ChevronRight, Sparkles, Target, Heart, Wind, Sun, Bike, TrainFront, Flame } from 'lucide-react';
 import { useEco } from '@/components/eco-provider';
 import { CustomSelect } from '@/components/custom-select';
+import { ActivityInputSchema } from '@/lib/validation';
 
 interface Tip {
   icon: 'leaf' | 'trending' | 'droplets' | 'tree' | 'recycle' | 'sparkles' | 'target' | 'heart' | 'wind' | 'sun' | 'bike' | 'train' | 'flame';
@@ -78,9 +79,16 @@ export default function Tracker() {
   const [recentTips, setRecentTips] = useState<Tip[]>([]);
   const [hiddenLogIds, setHiddenLogIds] = useState<string[]>([]);
 
-  const handleTransportLog = () => {
-    const dist = parseFloat(transportDistance) || 0;
-    if (dist <= 0) return;
+  const handleTransportLog = (macroMode?: string, macroDist?: string) => {
+    const rawVal = parseFloat(macroDist ?? transportDistance) || 0;
+    const mode = macroMode ?? transportMode;
+    const result = ActivityInputSchema.safeParse({ category: 'Transport', value: rawVal, label: mode });
+    if (!result.success) {
+      console.error(result.error.errors[0].message);
+      return;
+    }
+    const dist = result.data.value;
+    const safeMode = result.data.label;
     let emission = 0;
     const tips: Tip[] = [];
 
@@ -132,14 +140,21 @@ export default function Tracker() {
     }
 
     addEmission(emission, 'Transport');
-    addLog({ category: 'Transport', emission, message: `Logged Transport: ${transportMode} (${dist}km)` });
+    addLog({ category: 'Transport', emission, message: `Logged Transport: ${safeMode} (${dist}km)` });
     setRecentTips(tips);
-    setTransportDistance('');
+    if (!macroDist) setTransportDistance('');
   };
 
-  const handleFoodLog = () => {
-    const servings = parseFloat(foodServings) || 0;
-    if (servings <= 0) return;
+  const handleFoodLog = (macroType?: string, macroSrv?: string) => {
+    const rawVal = parseFloat(macroSrv ?? foodServings) || 0;
+    const type = macroType ?? foodType;
+    const result = ActivityInputSchema.safeParse({ category: 'Food', value: rawVal, label: type });
+    if (!result.success) {
+      console.error(result.error.errors[0].message);
+      return;
+    }
+    const servings = result.data.value;
+    const safeType = result.data.label;
     let emission = 0;
     const tips: Tip[] = [];
 
@@ -181,14 +196,21 @@ export default function Tracker() {
     }
 
     addEmission(emission, 'Food');
-    addLog({ category: 'Food', emission, message: `Logged Food: ${foodType} (${servings} servings)` });
+    addLog({ category: 'Food', emission, message: `Logged Food: ${safeType} (${servings} servings)` });
     setRecentTips(tips);
-    setFoodServings('');
+    if (!macroSrv) setFoodServings('');
   };
 
-  const handleEnergyLog = () => {
-    const hours = parseFloat(energyDuration) || 0;
-    if (hours <= 0) return;
+  const handleEnergyLog = (macroAction?: string, macroDuration?: string) => {
+    const rawVal = parseFloat(macroDuration ?? energyDuration) || 0;
+    const action = macroAction ?? energyAction;
+    const result = ActivityInputSchema.safeParse({ category: 'Energy', value: rawVal, label: action });
+    if (!result.success) {
+      console.error(result.error.errors[0].message);
+      return;
+    }
+    const hours = result.data.value;
+    const safeAction = result.data.label;
     let emission = 0;
     const tips: Tip[] = [];
 
@@ -238,9 +260,9 @@ export default function Tracker() {
     }
 
     addEmission(emission, 'Energy');
-    addLog({ category: 'Energy', emission, message: `Logged Energy: ${energyAction} (${hours} hrs)` });
+    addLog({ category: 'Energy', emission, message: `Logged Energy: ${safeAction} (${hours} hrs)` });
     setRecentTips(tips);
-    setEnergyDuration('');
+    if (!macroDuration) setEnergyDuration('');
   };
 
   return (
@@ -252,6 +274,31 @@ export default function Tracker() {
         </div>
       </div>
       
+      {/* 1-Tap Quick Actions */}
+      <div className="mb-6 space-y-3">
+        <h2 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">1-Tap Quick Actions</h2>
+        <div className="flex flex-wrap gap-2">
+          <button 
+            onClick={() => handleTransportLog('Public Transit (Bus/Train)', '5')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50/80 hover:bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:hover:bg-blue-900/60 dark:text-blue-300 border border-blue-100/70 dark:border-blue-900/30 rounded-lg text-xs font-semibold transition-all hover:scale-102 duration-200 shadow-sm"
+          >
+            <TrainFront className="w-3.5 h-3.5" /> Metro (5km)
+          </button>
+          <button 
+            onClick={() => handleFoodLog('Vegan Meal', '1')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/60 dark:text-emerald-300 border border-emerald-100/70 dark:border-emerald-900/30 rounded-lg text-xs font-semibold transition-all hover:scale-102 duration-200 shadow-sm"
+          >
+            <Leaf className="w-3.5 h-3.5" /> Plant-Based (1 srv)
+          </button>
+          <button 
+            onClick={() => handleEnergyLog('Unplugged Unused Devices', '8')}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50/80 hover:bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 dark:text-amber-300 border border-amber-100/70 dark:border-amber-900/30 rounded-lg text-xs font-semibold transition-all hover:scale-102 duration-200 shadow-sm"
+          >
+            <Zap className="w-3.5 h-3.5" /> Unplug Devices (8h)
+          </button>
+        </div>
+      </div>
+
       {recentTips.length > 0 && (
         <div className="space-y-4 animate-in slide-in-from-top-3 duration-500">
           <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-slate-800/50">
@@ -335,16 +382,16 @@ export default function Tracker() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Transportation */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <div className="p-2 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-lg">
               <Car className="w-5 h-5" />
             </div>
-            <h2 className="font-bold text-slate-700">Transportation</h2>
+            <h2 className="font-bold text-slate-700 dark:text-slate-200">Transportation</h2>
           </div>
           <div className="space-y-4 flex-1">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Mode of Transport</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Mode of Transport</label>
               <CustomSelect 
                 value={transportMode}
                 onChange={setTransportMode}
@@ -357,36 +404,36 @@ export default function Tracker() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Distance (km)</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Distance (km)</label>
               <input 
                 type="number" 
                 value={transportDistance}
                 onChange={(e) => setTransportDistance(e.target.value)}
                 placeholder="e.g. 15" 
-                className="w-full p-2 border border-slate-200 rounded text-sm text-slate-700 bg-slate-50 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" 
+                className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/40 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors" 
               />
             </div>
           </div>
           <button 
             onClick={handleTransportLog}
             disabled={!transportDistance || parseFloat(transportDistance) <= 0}
-            className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
+            className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" /> Record Transport
           </button>
         </div>
 
         {/* Food */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+            <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-lg">
               <Utensils className="w-5 h-5" />
             </div>
-            <h2 className="font-bold text-slate-700">Food & Diet</h2>
+            <h2 className="font-bold text-slate-700 dark:text-slate-200">Food & Diet</h2>
           </div>
           <div className="space-y-4 flex-1">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Meal Type</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Meal Type</label>
               <CustomSelect 
                 value={foodType}
                 onChange={setFoodType}
@@ -399,36 +446,36 @@ export default function Tracker() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Servings</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Servings</label>
               <input 
                 type="number" 
                 value={foodServings}
                 onChange={(e) => setFoodServings(e.target.value)}
                 placeholder="e.g. 0" 
-                className="w-full p-2 border border-slate-200 rounded text-sm text-slate-700 bg-slate-50 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" 
+                className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/40 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors" 
               />
             </div>
           </div>
           <button 
             onClick={handleFoodLog}
             disabled={!foodServings || parseFloat(foodServings) <= 0}
-            className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
+            className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" /> Record Meal
           </button>
         </div>
 
         {/* Energy */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800/80 flex flex-col">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-amber-50 text-amber-600 rounded-lg">
+            <div className="p-2 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-lg">
               <Zap className="w-5 h-5" />
             </div>
-            <h2 className="font-bold text-slate-700">Energy Source</h2>
+            <h2 className="font-bold text-slate-700 dark:text-slate-200">Energy Source</h2>
           </div>
           <div className="space-y-4 flex-1">
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Energy Action</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Energy Action</label>
               <CustomSelect 
                 value={energyAction}
                 onChange={setEnergyAction}
@@ -441,20 +488,20 @@ export default function Tracker() {
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Duration (Hours)</label>
+              <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Duration (Hours)</label>
               <input 
                 type="number" 
                 value={energyDuration}
                 onChange={(e) => setEnergyDuration(e.target.value)}
                 placeholder="e.g. 4" 
-                className="w-full p-2 border border-slate-200 rounded text-sm text-slate-700 bg-slate-50 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" 
+                className="w-full p-2 border border-slate-200 dark:border-slate-800 rounded text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/40 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors" 
               />
             </div>
           </div>
           <button 
             onClick={handleEnergyLog}
             disabled={!energyDuration || parseFloat(energyDuration) <= 0}
-            className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
+            className="mt-6 w-full py-2 bg-slate-800 hover:bg-slate-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white text-sm font-bold rounded transition-colors flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" /> Record Energy
           </button>
@@ -465,20 +512,20 @@ export default function Tracker() {
         const visibleLogs = logs.filter(log => !hiddenLogIds.includes(log.id));
         if (visibleLogs.length === 0) return null;
         return (
-          <div className="bg-white p-6 justify-center rounded-lg shadow-sm border border-emerald-200">
+          <div className="bg-white dark:bg-slate-900 p-6 justify-center rounded-lg shadow-sm border border-emerald-200 dark:border-emerald-800/80">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-slate-700 text-sm">Recent Footprint Records</h3>
+              <h3 className="font-bold text-slate-700 dark:text-slate-200 text-sm">Recent Footprint Records</h3>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setHiddenLogIds(prev => [...prev, ...visibleLogs.map(l => l.id)])}
-                  className="px-2.5 py-1 text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded transition-all duration-200 flex items-center gap-1"
+                  className="px-2.5 py-1 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-all duration-200 flex items-center gap-1"
                   title="Dismiss all records from this view"
                 >
                   <X className="w-3.5 h-3.5" /> Dismiss All
                 </button>
                 <button
                   onClick={() => deleteLogs(visibleLogs.map(l => l.id))}
-                  className="px-2.5 py-1 text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-all duration-200 flex items-center gap-1"
+                  className="px-2.5 py-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 rounded transition-all duration-200 flex items-center gap-1"
                   title="Delete all records permanently"
                 >
                   <Trash2 className="w-3.5 h-3.5" /> Delete All
@@ -487,22 +534,22 @@ export default function Tracker() {
             </div>
             <div className={`space-y-2 ${visibleLogs.length > 3 ? "max-h-[220px] overflow-y-auto pr-2" : ""}`}>
               {visibleLogs.map((log) => (
-                <div key={log.id} className="flex justify-between items-center text-sm p-3 bg-emerald-50 text-emerald-800 rounded border border-emerald-100 group">
+                <div key={log.id} className="flex justify-between items-center text-sm p-3 bg-emerald-50/80 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 rounded border border-emerald-100/70 dark:border-emerald-900/30 group">
                   <div className="flex flex-col gap-1">
                     <span>{log.message}</span>
-                    <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded w-fit">Success</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 rounded w-fit">Success</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => deleteLog(log.id)}
-                      className="p-1.5 text-emerald-600 hover:text-red-600 hover:bg-white rounded transition-colors"
+                      className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-white dark:hover:bg-slate-800 rounded transition-colors"
                       title="Delete footprint permanently"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setHiddenLogIds(prev => [...prev, log.id])}
-                      className="p-1.5 text-emerald-600 hover:text-slate-600 hover:bg-white rounded transition-colors"
+                      className="p-1.5 text-emerald-600 dark:text-emerald-400 hover:text-slate-600 dark:hover:text-slate-350 hover:bg-white dark:hover:bg-slate-800 rounded transition-colors"
                       title="Dismiss card"
                     >
                       <X className="w-4 h-4" />

@@ -31,5 +31,13 @@ export default function EmissionThemeEffect() {
     }
   }, [todayEmissions]);
 
-  return null;
+  const emissionsExceeded = todayEmissions >= 50.0;
+
+  return (
+    <div className="sr-only" aria-live="assertive">
+      {emissionsExceeded 
+        ? "Alert: Carbon limits exceeded. Digital biosphere turning into an arid orange haze." 
+        : "Ecosystem stable. Biosphere is a thriving green paradise."}
+    </div>
+  );
 }

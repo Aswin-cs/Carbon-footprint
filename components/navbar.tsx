@@ -65,9 +65,9 @@ export default function NavBar() {
               Insights
             </Link>
             <Link
-              href="/acheivement"
+              href="/achievement"
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
-                pathname.startsWith('/acheivement')
+                pathname.startsWith('/achievement')
                   ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-700/10'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
@@ -95,24 +95,24 @@ export default function NavBar() {
               />
 
               {/* Modal menu */}
-              <div className="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-                <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
-                  <label className="text-[14px] font-bold text-slate-800 tracking-tight">Navigation</label>
-                  <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 bg-slate-50 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors">
+              <div className="relative bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800/80 flex justify-between items-center bg-white dark:bg-slate-900">
+                  <label className="text-[14px] font-bold text-slate-800 dark:text-slate-100 tracking-tight">Navigation</label>
+                  <button onClick={() => setIsMenuOpen(false)} className="p-2 -mr-2 bg-slate-50 dark:bg-slate-800 rounded-full text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="flex flex-col gap-3 p-6 bg-slate-50/50">
+                <div className="flex flex-col gap-3 p-6 bg-slate-50/50 dark:bg-slate-900/50">
                   <Link
                     href="/"
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
                       pathname === '/'
-                        ? 'text-blue-700 bg-blue-50/50 border-blue-200'
-                        : 'text-slate-800 hover:text-blue-600 bg-white hover:bg-slate-50 border-slate-100'
+                        ? 'text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800/60'
+                        : 'text-slate-800 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60 border-slate-100 dark:border-slate-800'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg transition-colors ${pathname === '/' ? 'bg-blue-100' : 'bg-blue-50'}`}>
-                      <Home className={`w-5 h-5 transition-colors ${pathname === '/' ? 'text-blue-700' : 'text-blue-600'}`} />
+                    <div className={`p-2 rounded-lg transition-colors ${pathname === '/' ? 'bg-blue-100 dark:bg-blue-900/50' : 'bg-blue-50 dark:bg-blue-950/40'}`}>
+                      <Home className={`w-5 h-5 transition-colors ${pathname === '/' ? 'text-blue-700 dark:text-blue-400' : 'text-blue-600 dark:text-blue-500'}`} />
                     </div>
                     Home Dashboard
                   </Link>
@@ -120,12 +120,12 @@ export default function NavBar() {
                     href="/tracker"
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
                       pathname.startsWith('/tracker')
-                        ? 'text-emerald-700 bg-emerald-50/50 border-emerald-200'
-                        : 'text-slate-800 hover:text-emerald-600 bg-white hover:bg-slate-50 border-slate-100'
+                        ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60'
+                        : 'text-slate-800 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60 border-slate-100 dark:border-slate-800'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/tracker') ? 'bg-emerald-100' : 'bg-emerald-50'}`}>
-                      <Activity className={`w-5 h-5 transition-colors ${pathname.startsWith('/tracker') ? 'text-emerald-700' : 'text-emerald-600'}`} />
+                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/tracker') ? 'bg-emerald-100 dark:bg-emerald-900/50' : 'bg-emerald-50 dark:bg-emerald-950/40'}`}>
+                      <Activity className={`w-5 h-5 transition-colors ${pathname.startsWith('/tracker') ? 'text-emerald-700 dark:text-emerald-400' : 'text-emerald-600 dark:text-emerald-500'}`} />
                     </div>
                     Tracker Dashboard
                   </Link>
@@ -133,25 +133,25 @@ export default function NavBar() {
                     href="/insight"
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
                       pathname.startsWith('/insight')
-                        ? 'text-amber-700 bg-amber-50/50 border-amber-200'
-                        : 'text-slate-800 hover:text-amber-600 bg-white hover:bg-slate-50 border-slate-100'
+                        ? 'text-amber-700 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/60'
+                        : 'text-slate-800 dark:text-slate-300 hover:text-amber-600 dark:hover:text-amber-400 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60 border-slate-100 dark:border-slate-800'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/insight') ? 'bg-amber-100' : 'bg-amber-50'}`}>
-                      <Lightbulb className={`w-5 h-5 transition-colors ${pathname.startsWith('/insight') ? 'text-amber-700' : 'text-amber-600'}`} />
+                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/insight') ? 'bg-amber-100 dark:bg-amber-900/50' : 'bg-amber-50 dark:bg-amber-950/40'}`}>
+                      <Lightbulb className={`w-5 h-5 transition-colors ${pathname.startsWith('/insight') ? 'text-amber-700 dark:text-amber-400' : 'text-amber-600 dark:text-amber-500'}`} />
                     </div>
                     Insights & Tips
                   </Link>
                   <Link
-                    href="/acheivement"
+                    href="/achievement"
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
-                      pathname.startsWith('/acheivement')
-                        ? 'text-indigo-700 bg-indigo-50/50 border-indigo-200'
-                        : 'text-slate-800 hover:text-indigo-600 bg-white hover:bg-slate-50 border-slate-100'
+                      pathname.startsWith('/achievement')
+                        ? 'text-indigo-700 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-800/60'
+                        : 'text-slate-800 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60 border-slate-100 dark:border-slate-800'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/acheivement') ? 'bg-indigo-100' : 'bg-indigo-50'}`}>
-                      <Coins className={`w-5 h-5 transition-colors ${pathname.startsWith('/acheivement') ? 'text-indigo-700' : 'text-indigo-600'}`} />
+                    <div className={`p-2 rounded-lg transition-colors ${pathname.startsWith('/achievement') ? 'bg-indigo-100 dark:bg-indigo-900/50' : 'bg-indigo-50 dark:bg-indigo-950/40'}`}>
+                      <Coins className={`w-5 h-5 transition-colors ${pathname.startsWith('/achievement') ? 'text-indigo-700 dark:text-indigo-400' : 'text-indigo-600 dark:text-indigo-500'}`} />
                     </div>
                     Achievements
                   </Link>

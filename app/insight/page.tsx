@@ -189,6 +189,22 @@ export default function InsightPage() {
     // Average daily emissions
     const dailyAvg = +(total / 7).toFixed(1);
 
+    // Anomaly Detection Algorithm
+    const anomalies: string[] = [];
+    if (total > 0) {
+      const transRatio = transportSum / total;
+      const foodRatio = foodSum / total;
+      const energyRatio = energySum / total;
+
+      if (transRatio > 0.6 && energyRatio < 0.2) {
+        anomalies.push(`Your Transport footprint is spiking at ${Math.round(transRatio * 100)}% of your total, while your Energy stays remarkably low at ${Math.round(energyRatio * 100)}%. You are highly efficient at home, but your commute is the critical optimization point.`);
+      } else if (foodRatio > 0.6 && transRatio < 0.2) {
+        anomalies.push(`Food choices dominate ${Math.round(foodRatio * 100)}% of your footprint, while transport is negligible. Consider focusing entirely on plant-based alternatives to rapidly shrink your footprint.`);
+      } else if (energyRatio > 0.6 && foodRatio < 0.2) {
+        anomalies.push(`Energy consumption accounts for ${Math.round(energyRatio * 100)}% of your emissions. Unplugging devices and switching to renewables will yield massive drops in your carbon output.`);
+      }
+    }
+
     return {
       total: +total.toFixed(1),
       transport: +transportSum.toFixed(1),
@@ -196,7 +212,8 @@ export default function InsightPage() {
       energy: +energySum.toFixed(1),
       highestCat,
       highestColor,
-      dailyAvg
+      dailyAvg,
+      anomalies
     };
   }, [displayLogs]);
 
@@ -665,6 +682,23 @@ export default function InsightPage() {
                 </p>
               </div>
             </div>
+
+            {/* Personalized Anomaly Insight */}
+            {stats.anomalies.length > 0 && (
+              <div className="mt-4 p-5 rounded-2xl border flex gap-4 items-start bg-rose-50/50 border-rose-200 dark:bg-rose-950/20 dark:border-rose-900/40 transition-all duration-300">
+                <div className="p-2 rounded-full shrink-0 bg-rose-100 text-rose-600 dark:bg-rose-900/60 dark:text-rose-400">
+                  <AlertCircle className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold mb-1.5 text-rose-800 dark:text-rose-300">
+                    Habit Anomaly Detected
+                  </h3>
+                  <p className="text-xs leading-relaxed opacity-90 text-rose-900/90 dark:text-rose-200/90">
+                    {stats.anomalies[0]}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Comparative Sustainability Gauge */}
