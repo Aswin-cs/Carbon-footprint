@@ -1,19 +1,17 @@
 "use client";
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Leaf, Menu, Activity, Coins, X, Home, Lightbulb } from 'lucide-react';
-import { useEco } from '@/components/eco-provider';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+
+import { Menu, Activity, Coins, X, Home, Lightbulb } from 'lucide-react';
 
 export default function NavBar() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const { } = useEco();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -33,6 +31,7 @@ export default function NavBar() {
           <div className="hidden md:flex gap-4 items-center">
             <Link
               href="/"
+              aria-current={pathname === '/' ? "page" : undefined}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 pathname === '/'
                   ? 'bg-blue-50 text-blue-700 shadow-sm ring-1 ring-blue-700/10'
@@ -44,6 +43,7 @@ export default function NavBar() {
             </Link>
             <Link
               href="/tracker"
+              aria-current={pathname.startsWith('/tracker') ? "page" : undefined}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 pathname.startsWith('/tracker')
                   ? 'bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-700/10'
@@ -55,6 +55,7 @@ export default function NavBar() {
             </Link>
             <Link
               href="/insight"
+              aria-current={pathname.startsWith('/insight') ? "page" : undefined}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 pathname.startsWith('/insight')
                   ? 'bg-amber-50 text-amber-700 shadow-sm ring-1 ring-amber-700/10'
@@ -66,6 +67,7 @@ export default function NavBar() {
             </Link>
             <Link
               href="/achievement"
+              aria-current={pathname.startsWith('/achievement') ? "page" : undefined}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
                 pathname.startsWith('/achievement')
                   ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-700/10'
@@ -77,7 +79,7 @@ export default function NavBar() {
             </Link>
           </div>
         </div>
-        <div className="flex items-center space-x-2 relative" ref={menuRef}>
+        <div className="flex items-center space-x-2 relative">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden p-2 text-slate-600 hover:text-emerald-600 hover:bg-slate-100 rounded-md transition-colors relative z-[110]"
@@ -105,6 +107,7 @@ export default function NavBar() {
                 <div className="flex flex-col gap-3 p-6 bg-slate-50/50 dark:bg-slate-900/50">
                   <Link
                     href="/"
+                    aria-current={pathname === '/' ? "page" : undefined}
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
                       pathname === '/'
                         ? 'text-blue-700 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800/60'
@@ -118,6 +121,7 @@ export default function NavBar() {
                   </Link>
                   <Link
                     href="/tracker"
+                    aria-current={pathname.startsWith('/tracker') ? "page" : undefined}
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
                       pathname.startsWith('/tracker')
                         ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800/60'
@@ -131,6 +135,7 @@ export default function NavBar() {
                   </Link>
                   <Link
                     href="/insight"
+                    aria-current={pathname.startsWith('/insight') ? "page" : undefined}
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
                       pathname.startsWith('/insight')
                         ? 'text-amber-700 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/60'
@@ -144,6 +149,7 @@ export default function NavBar() {
                   </Link>
                   <Link
                     href="/achievement"
+                    aria-current={pathname.startsWith('/achievement') ? "page" : undefined}
                     className={`flex items-center gap-4 text-lg font-bold transition-all w-full p-4 rounded-xl border shadow-sm active:scale-95 ${
                       pathname.startsWith('/achievement')
                         ? 'text-indigo-700 dark:text-indigo-400 bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-800/60'

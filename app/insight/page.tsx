@@ -170,7 +170,7 @@ export default function InsightPage() {
     const total = transportSum + foodSum + energySum;
     const maxVal = Math.max(transportSum, foodSum, energySum);
     let highestCat = 'General';
-    let highestColor = 'text-emerald-600 bg-emerald-50';
+    let highestColor = 'text-emerald-700 bg-emerald-50';
     if (maxVal > 0) {
       if (maxVal === transportSum) {
         highestCat = 'Transport';
@@ -178,11 +178,11 @@ export default function InsightPage() {
       }
       else if (maxVal === foodSum) {
         highestCat = 'Food';
-        highestColor = 'text-emerald-600 bg-emerald-50';
+        highestColor = 'text-emerald-700 bg-emerald-50';
       }
       else {
         highestCat = 'Energy';
-        highestColor = 'text-amber-600 bg-amber-50';
+        highestColor = 'text-amber-700 bg-amber-50';
       }
     }
 
@@ -416,9 +416,11 @@ export default function InsightPage() {
               }`}>
                 {/* SVG Sun from public folder */}
                 <div className="absolute top-6 left-1/2 -translate-x-1/2 z-0">
-                  <img
+                  <Image
                     src={isEmissionHigh ? "/dry_sun.svg" : "/sun.svg"}
                     alt="Sun"
+                    width={128}
+                    height={128}
                     className="w-24 h-24 md:w-32 md:h-32 transition-transform duration-700 animate-[spin_180s_linear_infinite] select-none pointer-events-none"
                   />
                 </div>
@@ -472,7 +474,7 @@ export default function InsightPage() {
                         className={`flex-1 text-center py-1 text-[9px] md:text-[10px] font-bold rounded-md transition-all ${
                           biosphereView === 'today'
                             ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
-                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-350'
+                            : 'text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-350'
                         }`}
                       >
                         Today
@@ -482,7 +484,7 @@ export default function InsightPage() {
                         className={`flex-1 text-center py-1 text-[9px] md:text-[10px] font-bold rounded-md transition-all ${
                           biosphereView === 'weekly'
                             ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 shadow-sm'
-                            : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-350'
+                            : 'text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-350'
                         }`}
                       >
                         Weekly Avg
@@ -536,10 +538,12 @@ export default function InsightPage() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                    <img
+                    <Image
                       src={isEmissionHigh ? "/dry_plant.svg" : "/plant.svg"}
                       alt="Plant"
-                      className="w-full max-h-32 object-contain object-bottom cursor-pointer"
+                      width={200}
+                      height={128}
+                      className="w-full h-auto max-h-32 object-contain object-bottom cursor-pointer"
                     />
                   </div>
 
@@ -568,10 +572,12 @@ export default function InsightPage() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                    <img
+                    <Image
                       src={isEmissionHigh ? "/dry_tree.svg" : "/tree.svg"}
                       alt="Tree"
-                      className="w-full max-h-60 object-contain object-bottom cursor-pointer"
+                      width={200}
+                      height={240}
+                      className="w-full h-auto max-h-60 object-contain object-bottom cursor-pointer"
                     />
                   </div>
 
@@ -600,10 +606,12 @@ export default function InsightPage() {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                    <img
+                    <Image
                       src={isEmissionHigh ? "/dry_flower.svg" : "/flower.svg"}
                       alt="Flower"
-                      className="w-full max-h-32 object-contain object-bottom cursor-pointer"
+                      width={200}
+                      height={128}
+                      className="w-full h-auto max-h-32 object-contain object-bottom cursor-pointer"
                     />
                   </div>
 
@@ -649,7 +657,7 @@ export default function InsightPage() {
               {/* Card 3: Primary Source */}
               <div className={`p-4 rounded-2xl border flex flex-col justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 ${categoryTheme.bg} ${categoryTheme.border} ${categoryTheme.hover}`}>
                 <div className="flex justify-between items-start">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Primary Source</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">Primary Source</span>
                   <div className="p-1.5 bg-slate-100 dark:bg-slate-800/60 rounded-lg text-slate-600 dark:text-slate-300">
                     <categoryTheme.icon className="w-4 h-4" />
                   </div>
@@ -867,7 +875,7 @@ export default function InsightPage() {
                 className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold border-b-2 transition-all shrink-0 ${
                   activeTab === 'transport' 
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400' 
-                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-350'
+                    : 'border-transparent text-slate-600 hover:text-slate-800 dark:hover:text-slate-350'
                 }`}
               >
                 <Car className="w-3.5 h-3.5" /> Commute
@@ -877,7 +885,7 @@ export default function InsightPage() {
                 className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold border-b-2 transition-all shrink-0 ${
                   activeTab === 'food' 
                     ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400' 
-                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-350'
+                    : 'border-transparent text-slate-600 hover:text-slate-800 dark:hover:text-slate-350'
                 }`}
               >
                 <Utensils className="w-3.5 h-3.5" /> Food
@@ -887,7 +895,7 @@ export default function InsightPage() {
                 className={`flex items-center gap-1.5 px-3 py-2 text-xs font-bold border-b-2 transition-all shrink-0 ${
                   activeTab === 'energy' 
                     ? 'border-amber-500 text-amber-600 dark:text-amber-400' 
-                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-350'
+                    : 'border-transparent text-slate-600 hover:text-slate-800 dark:hover:text-slate-350'
                 }`}
               >
                 <Zap className="w-3.5 h-3.5" /> Energy
@@ -917,9 +925,9 @@ export default function InsightPage() {
 
                   <div className="space-y-2.5">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-extrabold text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider">
+                      <h2 className="font-extrabold text-slate-500 dark:text-slate-400 text-[10px] uppercase tracking-wider">
                         {activeTabTheme.label}
-                      </h4>
+                      </h2>
                       <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${activeTabTheme.text} ${activeTabTheme.bg}`}>
                         {completedPledgesCount} of {TAB_DATA[activeTab].pledges.length} completed
                       </span>
@@ -938,6 +946,7 @@ export default function InsightPage() {
                       {TAB_DATA[activeTab].pledges.map(p => (
                         <label 
                           key={p.id} 
+                          htmlFor={`pledge-${p.id}`}
                           className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all ${
                             pledges[p.id] 
                               ? `${activeTabTheme.activeLabelBg} ${activeTabTheme.border}` 

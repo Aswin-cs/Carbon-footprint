@@ -2,15 +2,12 @@
 
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Award, ArrowUpDown, Filter, AlertTriangle, Settings2, Lightbulb, Zap, Leaf, Droplet, X, ChevronLeft, ChevronRight, Trash2, Download, Share2 } from 'lucide-react';
+import { AlertTriangle, Settings2, Lightbulb, Zap, Leaf, Droplet, X, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { useEco, LogEntry } from '@/components/eco-provider';
-import { CustomSelect } from '@/components/custom-select';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
 import { toPng } from 'html-to-image';
 import confetti from 'canvas-confetti';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b'];
+import { DashboardCharts } from '@/components/dashboard-charts';
+import { DashboardRecentLogs } from '@/components/dashboard-recent-logs';
 
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
@@ -20,8 +17,6 @@ export default function Dashboard() {
 
   const dashboardRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
-
-  const [selectedLogs, setSelectedLogs] = useState<string[]>([]);
 
   const hasRealData = logs.length > 0;
 
@@ -134,8 +129,6 @@ export default function Dashboard() {
     return calculated.length > 0 ? calculated : [{ name: 'No Data', value: 1 }];
   }, [hasRealData, categoryEmissions, logs, selectedDay]);
 
-  const [sortColumn, setSortColumn] = useState<keyof LogEntry>('date');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [filterCategory, setFilterCategory] = useState<string>('All Categories');
   const [showSettings, setShowSettings] = useState(false);
   const [tempLimit, setTempLimit] = useState(dailyLimit.toString());
@@ -292,110 +285,6 @@ export default function Dashboard() {
     return ECO_TIPS[dayOfYear % ECO_TIPS.length];
   }, []);
 
-  const handleSort = (column: keyof LogEntry) => {
-    if (sortColumn === column) {
-      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortColumn(column);
-      setSortDirection('desc');
-    }
-  };
-
-  const mockLogsList: LogEntry[] = useMemo(() => {
-    if (hasRealData) return [];
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const fake: LogEntry[] = [];
-    
-    // Pick a known Sunday: Jan 1, 2023 was a Sunday.
-    // So Jan 1 = Sun, Jan 2 = Mon, ... Jan 7 = Sat.
-    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    
-    dayLabels.forEach((dayLabel, idx) => {
-      const dayOffset = dayLabel === 'Sun' ? 1 : idx + 2; // Jan 1 is Sun, Jan 2 is Mon...
-      
-      const val = dayLabel.charCodeAt(0);
-      fake.push({
-        id: `mock-${idx}-1`,
-        date: new Date(2023, 0, dayOffset, 10, 0, 0).toISOString(),
-        category: 'Transport',
-        emission: +(10 + (val % 5) * 5.2).toFixed(1),
-        message: 'Sample Transport activity',
-      });
-      fake.push({
-        id: `mock-${idx}-2`,
-        date: new Date(2023, 0, dayOffset, 14, 0, 0).toISOString(),
-        category: 'Food',
-        emission: +(15 + (val % 3) * 4.8).toFixed(1),
-        message: 'Sample Food activity',
-      });
-    });
-    return fake;
-  }, [hasRealData]);
-
-  const filteredAndSortedLogs = useMemo(() => {
-    let result = hasRealData ? [...logs] : [...mockLogsList];
-    
-    if (selectedDay) {
-      result = result.filter(log => new Date(log.date).toLocaleDateString('en-US', { weekday: 'short' }) === selectedDay);
-    }
-
-    if (filterCategory !== 'All Categories') {
-      result = result.filter(log => {
-        if (filterCategory === 'Transport' && log.category.startsWith('Transport')) return true;
-        return log.category === filterCategory;
-      });
-    }
-
-    if (sortColumn) {
-      result.sort((a, b) => {
-        let aVal = a[sortColumn];
-        let bVal = b[sortColumn];
-        if (typeof aVal === 'string' && typeof bVal === 'string') {
-           return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
-        }
-        if (typeof aVal === 'number' && typeof bVal === 'number') {
-           return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
-        }
-        return 0;
-      });
-    }
-
-    return result;
-  }, [logs, sortColumn, sortDirection, filterCategory, selectedDay]);
-
-  const toggleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setSelectedLogs(filteredAndSortedLogs.map(log => log.id));
-    } else {
-      setSelectedLogs([]);
-    }
-  };
-
-  const toggleSelectLog = (id: string) => {
-    setSelectedLogs(prev => 
-      prev.includes(id) ? prev.filter(logId => logId !== id) : [...prev, id]
-    );
-  };
-
-  const handleDownloadJSON = () => {
-    const dataToDownload = hasRealData ? logs : mockLogsList;
-    if (dataToDownload.length === 0) return;
-    
-    const exportData = selectedLogs.length > 0 
-      ? dataToDownload.filter(log => selectedLogs.includes(log.id))
-      : dataToDownload;
-
-    const exportDataWithoutId = exportData.map(({ id, ...rest }) => rest);
-    
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportDataWithoutId, null, 2));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "emissions_data.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  };
-
   const handleShareDashboard = async () => {
     const node = dashboardRef.current;
     if (!node) return;
@@ -449,12 +338,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleDeleteSelected = () => {
-    if (selectedLogs.length > 0) {
-      deleteLogs(selectedLogs);
-      setSelectedLogs([]);
-    }
-  };
 
   const logsTodayCount = logs.filter(l => new Date(l.date).toDateString() === new Date().toDateString()).length;
   const totalLogsCount = logs.length;
@@ -479,7 +362,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center justify-between gap-4 w-full md:w-auto">
           <div className="flex flex-col items-start md:items-end flex-grow md:flex-grow-0">
-            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 transition-colors duration-500">Today's Goal</span>
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider mb-1 transition-colors duration-500">Today's Goal</span>
             <div className="flex items-center gap-2 w-full md:w-auto">
               <div className="w-full md:w-32 h-1.5 bg-slate-200 dark:bg-slate-800/50 rounded-full overflow-hidden flex-grow shrink transition-colors duration-500">
                 <div 
@@ -501,7 +384,7 @@ export default function Dashboard() {
             <button 
               onClick={handleShareDashboard}
               disabled={isSharing}
-              className="flex items-center justify-center gap-2 p-2 md:px-3 md:py-1.5 bg-emerald-600 text-white rounded-md text-xs font-medium hover:bg-emerald-700 active:scale-95 transition-all shrink-0 disabled:opacity-50 no-capture"
+              className="flex items-center justify-center gap-2 p-2 md:px-3 md:py-1.5 bg-emerald-700 text-white rounded-md text-xs font-medium hover:bg-emerald-800 active:scale-95 transition-all shrink-0 disabled:opacity-50 no-capture"
               title="Share Dashboard"
             >
               {isSharing ? (
@@ -526,11 +409,12 @@ export default function Dashboard() {
             <Lightbulb className="w-5 h-5" />
           </div>
           <div className="pr-6">
-            <h3 className="text-sm font-bold text-emerald-800 mb-1">Daily Eco-Tip</h3>
+            <h2 className="text-sm font-bold text-emerald-800 mb-1">Daily Eco-Tip</h2>
             <p className="text-sm text-emerald-700 leading-relaxed">{ecoTip}</p>
           </div>
           <button 
             onClick={() => setClosedTips(prev => ({ ...prev, ecoTip: true }))}
+            aria-label="Dismiss tip"
             className="absolute top-4 right-4 text-emerald-600/50 hover:text-emerald-700 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -544,11 +428,12 @@ export default function Dashboard() {
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div className="pr-6">
-            <h3 className="text-sm font-bold text-rose-800 mb-1">High Emissions Alert</h3>
+            <h2 className="text-sm font-bold text-rose-800 mb-1">High Emissions Alert</h2>
             <p className="text-sm text-rose-700 leading-relaxed">Your daily emissions have exceeded 50kg. Consider significant offset actions to maintain your carbon neutrality goals.</p>
           </div>
           <button 
             onClick={() => setClosedTips(prev => ({ ...prev, highEmission: true }))}
+            aria-label="Dismiss alert"
             className="absolute top-4 right-4 text-rose-600/50 hover:text-rose-700 transition-colors"
           >
             <X className="w-4 h-4" />
@@ -562,15 +447,16 @@ export default function Dashboard() {
         }`}>
           <AlertTriangle className={`w-5 h-5 shrink-0 ${isOverLimit ? 'text-rose-500' : 'text-amber-500'}`} />
           <div className="pr-6">
-            <h3 className="text-sm font-bold">
+            <h2 className="text-sm font-bold">
               {isOverLimit ? 'Daily Limit Reached' : 'Approaching Daily Limit'}
-            </h3>
+            </h2>
             <p className="text-xs mt-1" style={{ opacity: 0.9 }}>
               You've recorded {todayEmissions.toFixed(1)} kg CO2e today, which is {isOverLimit ? 'at or beyond' : 'nearing'} your daily limit of {dailyLimit} kg CO2e.
             </p>
           </div>
           <button 
             onClick={() => setClosedTips(prev => ({ ...prev, limitAlert: true }))}
+            aria-label="Dismiss limit alert"
             className={`absolute top-4 right-4 transition-colors ${
               isOverLimit ? 'text-rose-600/50 hover:text-rose-700' : 'text-amber-600/50 hover:text-amber-700'
             }`}
@@ -584,7 +470,8 @@ export default function Dashboard() {
         {canScrollLeft && !isDragging && !isScrolling && (
           <button 
             onClick={scrollLeft}
-            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white border border-slate-200 rounded-full shadow-lg text-slate-700 hover:text-emerald-600 hover:scale-110 active:scale-95 focus:outline-none transition-all hidden sm:flex xl:hidden no-capture"
+            aria-label="Scroll left"
+            className="absolute -left-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white border border-slate-200 rounded-full shadow-lg text-slate-700 hover:text-emerald-600 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-all hidden sm:flex xl:hidden no-capture"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -592,7 +479,8 @@ export default function Dashboard() {
         {canScrollRight && !isDragging && !isScrolling && (
           <button 
             onClick={scrollRight}
-            className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white border border-slate-200 rounded-full shadow-lg text-slate-700 hover:text-emerald-600 hover:scale-110 active:scale-95 focus:outline-none transition-all hidden sm:flex xl:hidden no-capture"
+            aria-label="Scroll right"
+            className="absolute -right-2 top-1/2 -translate-y-1/2 z-10 p-2 bg-white border border-slate-200 rounded-full shadow-lg text-slate-700 hover:text-emerald-600 hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-all hidden sm:flex xl:hidden no-capture"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -612,7 +500,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-sm flex flex-col justify-between w-[80vw] max-w-[280px] xl:w-full xl:max-w-none shrink-0 snap-start xl:snap-align-none transition-all duration-300 hover:shadow-md hover:-translate-y-1">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Today's Emissions</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Today's Emissions</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-bold text-slate-800">{todayEmissions.toFixed(2)}</span>
                   <span className="text-xs font-bold text-slate-500">kg CO₂e</span>
@@ -623,7 +511,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-emerald-600 bg-emerald-50 border border-emerald-100">
+              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-emerald-700 bg-emerald-50 border border-emerald-100">
                 — On Track
               </span>
             </div>
@@ -633,7 +521,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-sm flex flex-col justify-between w-[80vw] max-w-[280px] xl:w-full xl:max-w-none shrink-0 snap-start xl:snap-align-none transition-all duration-300 hover:shadow-md hover:-translate-y-1">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Footprints Today</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Footprints Today</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-bold text-slate-800">{logsTodayCount}</span>
                   <span className="text-xs font-bold text-slate-500">actions</span>
@@ -644,7 +532,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-emerald-600 bg-emerald-50 border border-emerald-100">
+              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-emerald-700 bg-emerald-50 border border-emerald-100">
                 ↗ Active
               </span>
             </div>
@@ -654,7 +542,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-sm flex flex-col justify-between w-[80vw] max-w-[280px] xl:w-full xl:max-w-none shrink-0 snap-start xl:snap-align-none transition-all duration-300 hover:shadow-md hover:-translate-y-1">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Footprints</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Footprints</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-bold text-slate-800">{totalLogsCount}</span>
                   <span className="text-xs font-bold text-slate-500">actions</span>
@@ -675,7 +563,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-sm flex flex-col justify-between w-[80vw] max-w-[280px] xl:w-full xl:max-w-none shrink-0 snap-start xl:snap-align-none transition-all duration-300 hover:shadow-md hover:-translate-y-1">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Weekly Avg</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Weekly Avg</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-bold text-slate-800">{weeklyAvg}</span>
                   <span className="text-xs font-bold text-slate-500">kg CO₂e</span>
@@ -686,7 +574,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-emerald-600 bg-emerald-50 border border-emerald-100">
+              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-emerald-700 bg-emerald-50 border border-emerald-100">
                 ↘ 5% vs last week
               </span>
             </div>
@@ -696,7 +584,7 @@ export default function Dashboard() {
           <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-sm flex flex-col justify-between w-[80vw] max-w-[280px] xl:w-full xl:max-w-none shrink-0 snap-start xl:snap-align-none transition-all duration-300 hover:shadow-md hover:-translate-y-1">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Emission Forecast</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Emission Forecast</p>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-bold text-slate-800">{projectedEndOfWeek}</span>
                   <span className="text-xs font-bold text-slate-500">kg CO₂e</span>
@@ -707,7 +595,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-amber-600 bg-amber-50 border border-amber-100">
+              <span className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded text-amber-700 bg-amber-50 border border-amber-100">
                 Est. weekly total
               </span>
             </div>
@@ -736,13 +624,13 @@ export default function Dashboard() {
                   step="0.1"
                   value={tempLimit} 
                   onChange={e => setTempLimit(e.target.value)}
-                  className="text-3xl py-4 pl-4 pr-12 border-2 border-slate-100 rounded-xl focus:outline-none focus:border-emerald-500 w-full font-bold text-slate-800 placeholder-slate-300 transition-colors shadow-inner bg-slate-50"
+                  className="text-3xl py-4 pl-4 pr-12 border-2 border-slate-100 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:border-transparent w-full font-bold text-slate-800 placeholder-slate-300 transition-colors shadow-inner bg-slate-50"
                 />
                 <span className="absolute right-5 text-sm font-bold text-slate-400">kg</span>
               </div>
               <button 
                 onClick={handleSaveLimit}
-                className="w-full mt-6 py-4 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 active:scale-95 transition-all text-sm shadow-sm shadow-emerald-500/20"
+                className="w-full mt-6 py-4 bg-emerald-700 text-white rounded-xl font-bold hover:bg-emerald-800 active:scale-95 transition-all text-sm shadow-sm shadow-emerald-500/20"
               >
                 Save Limit
               </button>
@@ -752,331 +640,26 @@ export default function Dashboard() {
         document.body
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
-                {chartMode === 'total' ? 'Weekly Emissions' : 'Weekly Trends'} <span className="hidden sm:inline">(kg CO2e)</span>
-              </h2>
-              {chartMode === 'total' && selectedDay && (
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 flex items-center gap-1 cursor-pointer hover:bg-emerald-100" onClick={() => setSelectedDay(null)}>
-                  {selectedDay} &times;
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {!hasRealData && <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded hidden sm:inline-block">Sample</span>}
-              <div className="flex bg-slate-100 rounded-lg p-1">
-                <button 
-                  onClick={() => setChartMode('total')}
-                  className={`px-2 py-1 text-[10px] font-bold uppercase rounded-md transition-colors ${chartMode === 'total' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  Total
-                </button>
-                <button 
-                  onClick={() => {
-                    setChartMode('weekly');
-                    setSelectedDay(null);
-                  }}
-                  className={`px-2 py-1 text-[10px] font-bold uppercase rounded-md transition-colors ${chartMode === 'weekly' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-500 hover:text-slate-700'}`}
-                >
-                  Weekly
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData}
-                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-                className={chartMode === 'total' ? 'cursor-pointer' : ''}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <Tooltip 
-                  cursor={{ fill: '#f8fafc' }}
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                />
-                <Bar 
-                  dataKey="emissions" 
-                  radius={[4, 4, 0, 0]} 
-                  maxBarSize={40}
-                  onClick={(data, index) => {
-                    if (chartMode === 'weekly') return;
-                    const label = data?.name || data?.payload?.name;
-                    if (label) {
-                      setSelectedDay(prev => prev === label ? null : label);
-                    }
-                  }}
-                >
-                  {chartData.map((entry, index) => {
-                    const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
-                    const isSelected = selectedDay === entry.name;
-                    const isToday = chartMode === 'total' && entry.name === today;
-                    const opacity = chartMode === 'total' && selectedDay && !isSelected ? 0.4 : 1;
-                    return (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={isToday ? '#047857' : (chartMode === 'weekly' ? COLORS[index % COLORS.length] : '#10b981')} 
-                        fillOpacity={opacity} 
-                        className="transition-opacity duration-300 cursor-pointer" 
-                      />
-                    );
-                  })}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+      <DashboardCharts 
+        chartMode={chartMode}
+        setChartMode={setChartMode}
+        selectedDay={selectedDay}
+        setSelectedDay={setSelectedDay}
+        chartData={chartData}
+        displayCategoryEmissions={displayCategoryEmissions}
+        hasRealData={hasRealData}
+        filterCategory={filterCategory}
+        setFilterCategory={setFilterCategory}
+      />
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
-              {selectedDay ? `${selectedDay}'s Emissions` : 'Emissions by Category'}
-            </h2>
-            {!hasRealData && <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Sample Data</span>}
-          </div>
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={displayCategoryEmissions}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {displayCategoryEmissions.map((entry, index) => {
-                    const isSelected = filterCategory === entry.name;
-                    const opacity = filterCategory !== 'All Categories' && !isSelected && entry.name !== 'No Data' ? 0.4 : 1;
-                    return (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.name === 'No Data' ? '#cbd5e1' : COLORS[index % COLORS.length]} 
-                        fillOpacity={opacity}
-                        className={entry.name !== 'No Data' ? 'cursor-pointer hover:opacity-80 transition-opacity outline-none' : 'outline-none'}
-                        onClick={() => {
-                          if (entry.name !== 'No Data') {
-                            setFilterCategory(prev => prev === entry.name ? 'All Categories' : entry.name);
-                          }
-                        }}
-                      />
-                    );
-                  })}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: number) => [`${value} kg CO2e`, 'Emissions']}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
-            {selectedDay ? `${selectedDay}'s Footprints` : 'Footprint Log'}
-          </h2>
-          {(hasRealData ? logs.length > 0 : mockLogsList.length > 0) && (
-            <div className="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 no-capture">
-              <button
-                onClick={handleDownloadJSON}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 rounded hover:bg-emerald-100 transition-colors mr-2"
-                title="Download JSON"
-              >
-                <Download className="w-3 h-3" />
-                <span className="hidden sm:inline">Export JSON</span>
-              </button>
-              {selectedLogs.length > 0 && (
-                <button
-                  onClick={handleDeleteSelected}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-red-600 bg-red-50 border border-red-100 rounded hover:bg-red-100 transition-colors mr-2"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Delete Selected ({selectedLogs.length})
-                </button>
-              )}
-              <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-              <div className="w-40 sm:w-48 shrink-0">
-                <CustomSelect 
-                  value={filterCategory} 
-                  onChange={setFilterCategory}
-                  options={['All Categories', 'Transport', 'Food', 'Energy']}
-                  size="small"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {(!hasRealData ? mockLogsList.length === 0 : logs.length === 0) ? (
-          <p className="text-sm text-slate-500 text-center py-8">No carbon footprints recorded yet.</p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {/* Mobile / Narrow View (Card Layout) */}
-            <div className={`md:hidden flex flex-col gap-3 ${filteredAndSortedLogs.length > 5 ? "max-h-[400px] overflow-y-auto pr-1" : ""}`}>
-              {filteredAndSortedLogs.length > 0 && (
-                <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-100 rounded-lg shadow-sm no-capture">
-                  <div className="flex items-center gap-2">
-                    <input 
-                      type="checkbox" 
-                      id="mobile-select-all"
-                      className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
-                      checked={filteredAndSortedLogs.length > 0 && selectedLogs.length === filteredAndSortedLogs.length}
-                      onChange={toggleSelectAll}
-                    />
-                    <label htmlFor="mobile-select-all" className="text-xs font-bold text-slate-600 uppercase tracking-wider cursor-pointer">
-                      Select All
-                    </label>
-                  </div>
-                  <button 
-                    onClick={() => handleSort('date')} 
-                    className="flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-emerald-600 transition-colors uppercase tracking-wider"
-                  >
-                    Date <ArrowUpDown className="w-3 h-3" />
-                  </button>
-                </div>
-              )}
-              <AnimatePresence mode="popLayout">
-                {filteredAndSortedLogs.map((log) => (
-                  <motion.div 
-                    key={log.id}
-                    layout
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -15 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex relative items-start gap-3 p-4 bg-white border border-slate-100 rounded-xl shadow-sm hover:border-slate-200 transition-colors"
-                  >
-                    <div className="mt-1 flex-shrink-0 no-capture">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 w-4 h-4"
-                        checked={selectedLogs.includes(log.id)}
-                        onChange={() => toggleSelectLog(log.id)}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0 pr-8">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex flex-col gap-1">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800 w-fit uppercase tracking-wider">
-                            {log.category.replace('Transportation', 'Transport')}
-                          </span>
-                          <div className="text-sm font-bold text-slate-700">
-                            {mounted ? new Date(log.date).toLocaleDateString() : ""}
-                          </div>
-                          <div className="text-[11px] font-medium text-slate-400">
-                            {mounted ? new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
-                          </div>
-                        </div>
-                        <div className="text-right flex flex-col gap-1 items-end mt-1">
-                          <span className="font-mono text-sm font-bold text-rose-600">
-                            +{log.emission} <span className="text-[10px] text-rose-400">kg</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => deleteLog(log.id)}
-                      className="absolute bottom-2 right-2 p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors no-capture"
-                      title="Delete footprint record"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              {filteredAndSortedLogs.length === 0 && (
-                <p className="text-sm text-slate-500 text-center py-8 bg-slate-50 rounded-lg border border-slate-100 border-dashed">No matching activities found.</p>
-              )}
-            </div>
-
-            {/* Desktop View (Table Layout) */}
-            <div className={`hidden md:block overflow-x-auto ${filteredAndSortedLogs.length > 5 ? "max-h-[300px] overflow-y-auto" : ""}`}>
-              <table className="w-full text-left text-sm whitespace-nowrap">
-                <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold tracking-wider sticky top-0 z-10 shadow-sm">
-                  <tr>
-                    <th className="px-4 py-3 rounded-l-lg w-10 no-capture">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                        checked={filteredAndSortedLogs.length > 0 && selectedLogs.length === filteredAndSortedLogs.length}
-                        onChange={toggleSelectAll}
-                      />
-                    </th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('date')}>
-                      <div className="flex items-center gap-1">Date <ArrowUpDown className="w-3 h-3" /></div>
-                    </th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('category')}>
-                      <div className="flex items-center gap-1">Category <ArrowUpDown className="w-3 h-3" /></div>
-                    </th>
-                    <th className="px-4 py-3 cursor-pointer hover:bg-slate-100 transition-colors" onClick={() => handleSort('emission')}>
-                      <div className="flex items-center gap-1">Emissions (kg CO2e) <ArrowUpDown className="w-3 h-3" /></div>
-                    </th>
-                    <th className="px-4 py-3 rounded-r-lg no-capture">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  <AnimatePresence>
-                    {filteredAndSortedLogs.map((log) => (
-                      <motion.tr 
-                        key={log.id}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.2 }}
-                        className="hover:bg-slate-50 transition-colors"
-                      >
-                        <td className="px-4 py-3 no-capture">
-                          <input 
-                            type="checkbox" 
-                            className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                            checked={selectedLogs.includes(log.id)}
-                            onChange={() => toggleSelectLog(log.id)}
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          {mounted ? new Date(log.date).toLocaleDateString() : ""} <span className="text-slate-400 ml-1">{mounted ? new Date(log.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800">
-                            {log.category.replace('Transportation', 'Transport')}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 font-mono text-xs text-rose-600">
-                          +{log.emission}
-                        </td>
-                        <td className="px-4 py-3 text-right no-capture">
-                          <button
-                            onClick={() => deleteLog(log.id)}
-                            className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                            title="Delete footprint record"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </AnimatePresence>
-                </tbody>
-              </table>
-              {filteredAndSortedLogs.length === 0 && (
-                <p className="text-sm text-slate-500 text-center py-8">No matching activities found.</p>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+      <DashboardRecentLogs 
+        logs={logs}
+        hasRealData={hasRealData}
+        selectedDay={selectedDay}
+        filterCategory={filterCategory}
+        setFilterCategory={setFilterCategory}
+        deleteLogs={deleteLogs}
+      />
     </div>
   );
 }

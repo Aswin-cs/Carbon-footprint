@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import DOMPurify from 'dompurify';
 import { z } from 'zod';
+import { ActivityInputSchema } from '@/lib/validation';
 
 // Zod Schemas for strict runtime validation
 const LimitSchema = z.number().positive("Limit must be positive");
@@ -303,7 +304,14 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
   }, [earnedBadges.join(',')]);
 
   const addEmission = (val: number, category: string) => {
-    if (typeof val !== 'number' || val < 0 || isNaN(val)) return; // Prevent negative emission injection
+    const validationResult = ActivityInputSchema.safeParse({
+      category: category,
+      value: val,
+      label: 'emission', // Placeholder to satisfy schema
+    });
+    
+    if (!validationResult.success) return; // Fail closed
+    
     const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
     setWeeklyEmissions(prev => {
       const newData = [...prev];
@@ -327,9 +335,17 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
     });
   };
   const addLog = (log: Omit<LogEntry, 'id' | 'date'>) => {
+    const validationResult = ActivityInputSchema.safeParse({
+      category: log.category,
+      value: log.emission,
+      label: log.message
+    });
+    
+    if (!validationResult.success) return; // Fail closed
+    
     const newLog: LogEntry = {
       ...log,
-      message: sanitize(log.message),
+      message: sanitize(validationResult.data.label),
       id: Math.random().toString(36).substring(2, 9),
       date: new Date().toISOString(),
     };
@@ -480,7 +496,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mb-0.5">Badge Unlocked!</p>
-              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{BADGE_DETAILS[recentBadge].name}</h4>
+              <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">{BADGE_DETAILS[recentBadge].name}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{BADGE_DETAILS[recentBadge].desc}</p>
             </div>
             <button onClick={() => setRecentBadge(null)} className="absolute top-2 right-2 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-350">
@@ -512,7 +528,7 @@ export function EcoProvider({ children }: { children: React.ReactNode }) {
                 <p className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${
                    activeAlert.type === 'high' ? 'text-rose-600' : 'text-amber-600'
                 }`}>Alert</p>
-                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{activeAlert.title}</h4>
+                <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">{activeAlert.title}</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">{activeAlert.desc}</p>
               </div>
               <button 

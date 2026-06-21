@@ -8,13 +8,14 @@ export function cn(...inputs: ClassValue[]) {
 // Baseline calculation utility extracted for testing purposes
 export function calculateCarbonEmissions(category: string, value: number): number {
   if (value <= 0) return 0;
-  
-  if (category === 'transportation' || category === 'Transport') {
-    return +(value * 0.2).toFixed(1); // Baseline car emission
-  } else if (category === 'food' || category === 'Food') {
-    return +(value * 3.5).toFixed(1); // Baseline beef emission
-  } else if (category === 'energy' || category === 'Energy') {
-    return +(value * 0.6).toFixed(1); // Baseline grid emission
-  }
-  return 0;
+
+  const multipliers: Record<string, number> = {
+    transportation: 0.2,
+    transport: 0.2,
+    food: 3.5,
+    energy: 0.6,
+  };
+
+  const multiplier = multipliers[category.toLowerCase()] || 0;
+  return +(value * multiplier).toFixed(1);
 }

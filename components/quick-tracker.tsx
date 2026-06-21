@@ -109,7 +109,7 @@ export default function QuickTracker() {
       <button
         onClick={() => setIsOpen(true)}
         title="Quick Footprint (Ctrl+K)"
-        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 z-[90] focus:outline-none focus:ring-4 focus:ring-emerald-300"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 hover:bg-emerald-800 text-white rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105 z-[90] focus:outline-none focus-visible:ring-4 focus-visible:ring-emerald-300"
       >
         <Plus className="w-6 h-6" />
       </button>
@@ -131,7 +131,7 @@ export default function QuickTracker() {
               
               {/* 1-Tap Quick Actions */}
               <div className="space-y-2 mb-4">
-                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">1-Tap Quick Logs</label>
+                <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">1-Tap Quick Logs</label>
                 <div className="flex flex-wrap gap-2">
                   <button 
                     onClick={() => handleMacro('Transport', 'Public Transit (Bus/Train)', 5, 0.3)} // 5km * 0.05
@@ -156,8 +156,9 @@ export default function QuickTracker() {
  
               <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Category</label>
+                  <label htmlFor="category-select" className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">Category</label>
                   <CustomSelect 
+                    id="category-select"
                     value={category}
                     onChange={setCategory}
                     options={['Transport', 'Food', 'Energy']}
@@ -165,10 +166,11 @@ export default function QuickTracker() {
                 </div>
  
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                  <label htmlFor="subcategory-select" className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
                     {category === 'Transport' ? 'Mode of Transport' : category === 'Food' ? 'Meal Type' : 'Energy Action'}
                   </label>
                   <CustomSelect 
+                    id="subcategory-select"
                     value={subCategory}
                     onChange={setSubCategory}
                     options={
@@ -193,11 +195,12 @@ export default function QuickTracker() {
                 </div>
  
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
+                  <label htmlFor="value-input" className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase tracking-wider">
                     {category === 'Transport' ? 'Distance (km)' : category === 'Food' ? 'Servings' : 'Duration (Hours)'}
                   </label>
                   <div className="relative flex items-center">
                     <input 
+                      id="value-input"
                       type="number" 
                       value={value}
                       autoFocus
@@ -209,7 +212,7 @@ export default function QuickTracker() {
                         }
                       }}
                       placeholder="0"
-                      className="text-2xl py-3 pl-4 pr-16 border-2 border-slate-100 dark:border-slate-800 rounded-xl focus:outline-none focus:border-emerald-500 w-full font-bold text-slate-800 dark:text-slate-200 placeholder-slate-300 dark:placeholder-slate-600 transition-colors shadow-inner bg-slate-50 dark:bg-slate-800/40 focus:bg-white dark:focus:bg-slate-800"
+                      className="text-2xl py-3 pl-4 pr-16 border-2 border-slate-100 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 w-full font-bold text-slate-800 dark:text-slate-200 placeholder-slate-300 dark:placeholder-slate-600 transition-colors shadow-inner bg-slate-50 dark:bg-slate-800/40 focus:bg-white dark:focus:bg-slate-800"
                     />
                     <span className="absolute right-4 text-sm font-bold text-slate-400 dark:text-slate-500">
                       {category === 'Transport' ? 'km' : category === 'Food' ? 'srv' : 'hrs'}
@@ -221,7 +224,7 @@ export default function QuickTracker() {
               <button
                 onClick={handleQuickLog}
                 disabled={!value || parseFloat(value) <= 0}
-                className="w-full py-3.5 mt-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-600 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3.5 mt-2 bg-emerald-600 hover:bg-emerald-800 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-600 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" /> Record Footprint
               </button>
